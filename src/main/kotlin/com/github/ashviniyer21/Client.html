@@ -13,6 +13,7 @@
 <div id="myMSE"></div>
 <video id="webcam" autoplay playsinline width="640" height="480"></video>
 <canvas id="canvas" class="d-none"></canvas>
+<canvas id="dummyCanvas" height="480" width="640"></canvas>
 <button onclick="update()">UPDATE</button>
 </body>
 <p id = "test"></p>
@@ -25,6 +26,8 @@
     let socket = new WebSocket(link)
     const webcamElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('canvas');
+    canvasElement.style.display = "none";
+    const dummyCanvasElement = document.getElementById('dummyCanvas');
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
 
     function submitRoom(){
@@ -34,7 +37,12 @@
         hasSubmitted = true;
     }
     socket.onmessage = function (event) {
-        if(event.data !== "Full"){
+        if((event.data.charAt(0) === '1' && !first || (event.data.charAt(0) === '2' && first))){
+                const img = new Image;
+                img.onload = () => { dummyCanvasElement.getContext("2d").drawImage(img, 0, 0); };
+                img.src = event.data.substring(2);
+                update();
+        } else if(event.data !== "Full"){
             id = roomId.value;
             let data = event.data.split("|")
             if(data.length > 1){
@@ -48,18 +56,6 @@
                         .catch(err => {
                             console.log(err);
                         });
-                } else if(data[0] === "1"){
-                    if(!first){
-                        const img = new Image;
-                        img.onload = () => { canvasElement.getContext("2d").drawImage(img, 0, 0); };
-                        img.src = data[1];
-                    }
-                } else {
-                    if(first){
-                        const img = new Image;
-                        img.onload = () => { canvasElement.getContext("2d").drawImage(img, 0, 0); };
-                        img.src = data[1];
-                    }
                 }
             } else {
                 if(data[0] === "First"){
@@ -73,7 +69,6 @@
     };
     function update() {
         let picture = webcam.snap();
-        // document.querySelector('#download-photo').href = picture;
         console.log(canvasElement.toDataURL())
         if(first){
             socket.send("1|" + canvasElement.toDataURL())
