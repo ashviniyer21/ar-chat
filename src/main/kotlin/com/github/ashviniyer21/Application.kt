@@ -7,6 +7,7 @@ import io.ktor.websocket.*
 import java.util.*
 import kotlin.collections.HashMap
 
+class Connection(val session: DefaultWebSocketSession, val name: String)
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -18,20 +19,30 @@ fun Application.module() {
         val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
         webSocket("/entry") {
             println("Adding user!")
-            val thisConnection = Connection(this)
+            val thisConnection = Connection(this, "")
             connections += thisConnection
             try {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()
-                    if(map.getOrDefault(receivedText, -1) == -1){
+                    if(receivedText.contains("1|") || receivedText.contains("2|")){
+                        connections.forEach {
+                            if (it != null) {
+                                it.session.send(receivedText)
+                            }
+                        }
+                    } else if(map.getOrDefault(receivedText, -1) == -1){
                         map[receivedText] = 1
                         send("First")
                     } else if(map[receivedText] == 1){
-                        send("Second")
                         map[receivedText] = 2
+                        connections.forEach {
+                            if (it != null) {
+                                it.session.send("Second|$receivedText")
+                            }
+                        }
                     } else {
-                        send("Room Full")
+                        send("Full")
                     }
                 }
             } catch (e: Exception) {
