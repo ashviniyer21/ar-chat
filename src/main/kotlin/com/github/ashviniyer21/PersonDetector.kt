@@ -11,6 +11,22 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Files
 import javax.imageio.ImageIO
+import javax.swing.ImageIcon
+
+import javax.swing.JLabel
+
+import java.awt.FlowLayout
+
+import javax.swing.JFrame
+import kotlin.concurrent.fixedRateTimer
+import java.io.IOException
+import javax.imageio.ImageReader
+
+import javax.imageio.stream.ImageInputStream
+
+
+
+
 
 val MODEL_FILE = File("src/main/resources/model/image-segmentation-model.pb") //Model file
 val INPUT_TENSOR_NAME = "ImageTensor:0" //Model input name constant
@@ -29,6 +45,7 @@ fun init(){
  * Detects people in the image and returns a byte array with a binary mask (1 where people are, 0 where people arent)
  */
 fun detectPerson(inputImg:BufferedImage):Array<Array<Byte>>{
+
     //Resize image to correct model size
     val resizedImg = resizeImageToModel(inputImg)
 
@@ -48,14 +65,15 @@ fun detectPerson(inputImg:BufferedImage):Array<Array<Byte>>{
 
     //Create input tensor with the prepared data from the image
     val inputTensor = TUint8.tensorOf(StdArrays.ndCopyOf(data))
-
+    val begin = System.nanoTime()
     //Run the model and store the resulting data in an output tensor
     val outputTensor = Session(graph)
         .runner()
         .feed(INPUT_TENSOR_NAME, inputTensor)
         .fetch(OUTPUT_TENSOR_NAME)
         .run()
-
+    val end = System.nanoTime()
+    println("Time: " + (end-begin)/1000000)
     val outputWidth = outputTensor.first().shape().asArray()[2].toInt()
     val outputHeight = outputTensor.first().shape().asArray()[1].toInt()
 
@@ -63,25 +81,35 @@ fun detectPerson(inputImg:BufferedImage):Array<Array<Byte>>{
 
     //Create output 2d array of bytes (0 if not detected, 1 if detected)
     val outputByteArray = Array(outputWidth){Array(outputHeight){0.toByte()} }
-    for(y in outputByteArray[0].indices){
-        for(x in outputByteArray.indices){
-            val i = x.toLong() + y*outputWidth.toLong()
-            val outputLong = longArr.getLong(i).toInt()
-            if(outputLong == PERSON_ID){
-               outputByteArray[x][y] = 1
+    try {
+        for(y in outputByteArray[0].indices){
+            for(x in outputByteArray.indices){
+                val i = x.toLong() + y*outputWidth.toLong()
+                val outputLong = longArr.getLong(i).toInt()
+                if(outputLong == PERSON_ID){
+                    outputByteArray[x][y] = 1
+                }
             }
         }
     }
+    catch (e: Exception){
+
+    }
+
 
     return outputByteArray
 }
 
 fun resizeImageToModel(img:BufferedImage):BufferedImage{
+
     //Resize image to fit the model's input size
     val resizeRatio = 1.0 * INPUT_SIZE / Integer.max(img.width, img.height)
     val targetWidth = (resizeRatio * img.width).toInt()
     val targetHeight = (resizeRatio * img.height).toInt()
-    return Scalr.resize(img, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH, targetWidth, targetHeight, Scalr.OP_ANTIALIAS)
+    val resized = Scalr.resize(img, Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH, targetWidth, targetHeight, Scalr.OP_ANTIALIAS)
+
+
+    return resized
 }
 
 fun generateOverlayImage(original:BufferedImage, mask:Array<Array<Byte>>): BufferedImage {
@@ -100,12 +128,58 @@ fun generateOverlayImage(original:BufferedImage, mask:Array<Array<Byte>>): Buffe
     return outputImg
 }
 
-fun main(){
-    init()
-    val imgFile = File("src/main/resources/test-images/person1.jpg")
-    val img = resizeImageToModel(ImageIO.read(imgFile))
+val frame = JFrame()
+
+
+fun readGif(gif: File):MutableList<BufferedImage>{
+    val images = mutableListOf<BufferedImage>()
+    try {
+        val reader: ImageReader = ImageIO.getImageReadersByFormatName("gif").next()
+        val stream = ImageIO.createImageInputStream(gif)
+        reader.input = stream
+        val count: Int = reader.getNumImages(true)
+
+        for (index in 0 until count) {
+            println(index)
+            val frame: BufferedImage = reader.read(index)
+            images.add(frame)
+        }
+    } catch (e: Exception) {
+        // An I/O problem has occurred
+    }
+    return images
+}
+
+var counter = 0
+var gifImages = mutableListOf<BufferedImage>()
+
+fun runIteration(){
+    val img = resizeImageToModel(gifImages[counter])
     val byteArray = detectPerson(img)
+
     val overlayImg = generateOverlayImage(img, byteArray)
     val outputfile = File("src/main/resources/output/result.jpg")
-    ImageIO.write(overlayImg, "jpg", outputfile)
+    frame.contentPane.removeAll()
+    frame.contentPane.add(JLabel(ImageIcon(overlayImg)))
+    frame.pack()
+
+    counter++
+    if(counter > gifImages.size-1){
+        counter = 0
+    }
+}
+
+fun main(){
+    gifImages = readGif(File("src/main/resources/test-images/person.gif"))
+
+    frame.contentPane.layout = FlowLayout()
+    frame.pack()
+    frame.isVisible = true
+    frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE;
+
+    init()
+
+    fixedRateTimer("timer", false, 0L, 1){
+        runIteration()
+    }
 }
