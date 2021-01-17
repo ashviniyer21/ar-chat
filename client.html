@@ -30,14 +30,15 @@
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
     const webcam2 = new Webcam(otherCamElement, 'environment');
 
-    webcam.start()
+    webcam2.start()
         .then(result =>{
             // console.log("webcam started");
         })
         .catch(err => {
             console.log(err);
         });
-    webcam2.start()
+
+    webcam.start()
         .then(result =>{
             // console.log("webcam started");
         })
