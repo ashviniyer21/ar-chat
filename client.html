@@ -37,6 +37,8 @@
 <video id="webcam" autoplay playsinline width="640" height="480"></video>
 <canvas id="canvas" height="480" width="640"></canvas>
 <canvas id="dummyCanvas" height="480" width="640"></canvas>
+<canvas id="dummyCanvas1" height="480" width="640"></canvas>
+<canvas id="dummyCanvas2" height="480" width="640"></canvas>
 <label for="roomId">Room ID: </label><input type="text" id="roomId">
 <button id="submit" onclick="submitRoom()">Submit</button>
 <p id="status"></p>
@@ -50,7 +52,11 @@
     const webcamElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('canvas');
     canvasElement.style.display = "none";
-    const dummyCanvasElement = document.getElementById('dummyCanvas');
+    const sendImageCanvas = document.getElementById('dummyCanvas');
+    const receiveImageCanvas = document.getElementById('dummyCanvas1');
+    receiveImageCanvas.style.display = "none";
+    const maskImageCanvas = document.getElementById('dummyCanvas2');
+    maskImageCanvas.style.display = "none";
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
     webcam.start();
     loadBodyPix()
@@ -65,32 +71,43 @@
         });
     }
 
-    async function predict() {
-        const opacity = 1;
-        const flipHorizontal = true;
-        const maskBlurAmount = 0;
-        const segmentation = await net.segmentPerson(webcamElement, {
-            flipHorizontal: true,
-            internalResolution: 'low',
-            segmentationThreshold: .7
-        });
+    async function segmentImage(){
+        try{
+            const opacity = 1;
+            const flipHorizontal = true;
+            const maskBlurAmount = 0
 
-        const coloredPartImage = bodyPix.toMask(segmentation);
-        bodyPix.drawMask(
-            dummyCanvasElement, webcamElement, coloredPartImage, opacity, maskBlurAmount,
-            flipHorizontal);
+            var img = new Image;
+            img.src = receiveImageCanvas.toDataURL("image/png")
 
-        var ctx = dummyCanvasElement.getContext("2d")
-        var imgData = ctx.getImageData(0, 0, dummyCanvasElement.width, dummyCanvasElement.height);
-        for(var i = 0; i < imgData.data.length; i+=4){
-            if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
-                red = imgData.data[i] = 0;
-                green = imgData.data[i+1] = 0;
-                blue = imgData.data[i+2] = 0;
-                alpha = imgData.data[i+3] = 0;
+            const segmentation = await net.segmentPerson(img, {
+                flipHorizontal: true,
+                internalResolution: 'low',
+                segmentationThreshold: .7
+            });
+
+            const coloredPartImage = bodyPix.toMask(segmentation);
+            bodyPix.drawMask(
+                maskImageCanvas, webcamElement, coloredPartImage, opacity, maskBlurAmount,
+                flipHorizontal);
+
+            var ctx = maskImageCanvas.getContext("2d")
+            var imgData = ctx.getImageData(0, 0, maskImageCanvas.width, maskImageCanvas.height);
+            for(var i = 0; i < imgData.data.length; i+=4){
+                if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
+                    red = imgData.data[i] = 0;
+                    green = imgData.data[i+1] = 0;
+                    blue = imgData.data[i+2] = 0;
+                    alpha = imgData.data[i+3] = 0;
+                }
             }
+            ctx.putImageData(imgData, 0, 0);
+
+            document.getElementById('cylinder').setAttribute('src', maskImageCanvas.toDataURL("image/png"))
         }
-        ctx.putImageData(imgData, 0, 0);
+        catch(e){
+
+        }
     }
 
     function submitRoom(){
@@ -111,22 +128,22 @@
     });
     socket.on('image2', function (imageString) {
         if(!first){
-            // const img = new Image;
-            // console.log("Received");
-            // dummyCanvasElement.getContext("2d").clearRect(0, 0, dummyCanvasElement.width, dummyCanvasElement.height)
-            // img.onload = () => { dummyCanvasElement.getContext("2d").drawImage(img, 0, 0); };
-            // img.src = imageString;
-            document.getElementById('cylinder').setAttribute('src', imageString)
+            const img = new Image;
+            img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0); };
+            img.src = imageString;
+            segmentImage()
         }
         update();
     })
     function update() {
         if(first){
-            predict();
+            sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
         }
-        socket.emit('image', id, dummyCanvasElement.toDataURL("image/png"));
-        // webcam.snap();
-        // console.log("Snap");
+        var img = sendImageCanvas.toDataURL("imagge/png")
+
+        socket.emit('image', id, sendImageCanvas.toDataURL("image/png"));
     }
+
+
 </script>
 </html>
