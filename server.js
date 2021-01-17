@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
            socket.join(id);
            connections.set(id, connections.get(id) + 1);
            if(connections.get(id) === 1){
-               console.log("joined");
+               // console.log("joined");
                io.to(id).emit('connection-successful-1');
            } else {
                io.to(id).emit('connection-successful-2', id);
@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
        }
    });
    socket.on('image', (id, imageString) => {
-        console.log("Send");
+        // console.log("Send");
         socket.broadcast.emit('image2', imageString);
     });
    socket.on('disconnect', () => console.log('Client disconnected'));

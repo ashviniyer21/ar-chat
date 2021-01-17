@@ -12,9 +12,9 @@
 <br>
 <br>
 <div id="myMSE"></div>
-<video id="webcam" autoplay playsinline width="320" height="240"></video>
+<video id="webcam" autoplay playsinline width="240" height="180"></video>
 <canvas id="canvas" class="d-none"></canvas>
-<canvas id="dummyCanvas" height="240" width="320"></canvas>
+<canvas id="dummyCanvas" height="180" width="240"></canvas>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -29,14 +29,14 @@
 
     webcam.start()
         .then(result =>{
-            console.log("webcam started");
+            // console.log("webcam started");
         })
         .catch(err => {
             console.log(err);
         });
 
     function submitRoom(){
-        console.log("here");
+        // console.log("here");
         socket.emit('connection-attempt', roomInput.value);
     }
     socket.on('connection-successful-1', function () {
@@ -52,14 +52,14 @@
     });
     socket.on('image2', function (imageString) {
             const img = new Image;
-            console.log("Received");
+            // console.log("Received");
             img.onload = () => { dummyCanvasElement.getContext("2d").drawImage(img, 0, 0); };
             img.src = imageString;
         update()
     })
     function update() {
         webcam.snap();
-        console.log("Snap");
+        // console.log("Snap");
         socket.emit('image', id, canvasElement.toDataURL());
     }
 </script>
