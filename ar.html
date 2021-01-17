@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-    <title>Gesture Interactions - A-Frame & AR.js</title>
+    <title>AR</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="styles.css">
@@ -12,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
 </head>
-<body>
+<body style="margin : 0px; overflow: hidden;" >
 <a-scene
         arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'
         embedded
@@ -33,103 +32,5 @@
 
     <a-entity camera></a-entity>
 </a-scene>
-
-<canvas id="canvas" class="d-none"></canvas>
-<canvas id="canvas1"></canvas>
-<video id="webcam" autoplay playsinline width="640" height="480"></video>
-<script>
-    const webcamElement = document.getElementById('webcam');
-    const canvas = document.getElementById('canvas');
-    const webcam = new Webcam(webcamElement, 'user', canvas);
-    webcam.start()
-
-    var net
-
-    async function loadBodyPix() {
-        net = await bodyPix.load({
-            architecture: 'MobileNetV1',
-            outputStride: 16,
-            multiplier: 0.5,
-            quantBytes: 1
-        });
-    }
-
-    async function predict() {
-        const opacity = 1;
-        const flipHorizontal = true;
-        const maskBlurAmount = 0;
-        const segmentation = await net.segmentPerson(webcamElement, {
-            flipHorizontal: true,
-            internalResolution: 'low',
-            segmentationThreshold: .7
-        });
-
-        const coloredPartImage = bodyPix.toMask(segmentation);
-        bodyPix.drawMask(
-            document.getElementById("canvas1"), webcamElement, coloredPartImage, opacity, maskBlurAmount,
-            flipHorizontal);
-
-        var canvas1 = document.getElementById("canvas1");
-        var ctx = canvas1.getContext("2d")
-        var imgData = ctx.getImageData(0, 0, canvas1.width, canvas1.height);
-        for(var i = 0; i < imgData.data.length; i+=4){
-            if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
-                red = imgData.data[i] = 0;
-                green = imgData.data[i+1] = 0;
-                blue = imgData.data[i+2] = 0;
-                alpha = imgData.data[i+3] = 0;
-            }
-        }
-        ctx.putImageData(imgData, 0, 0);
-
-        var img = canvas1.toDataURL("image/png");
-
-        document.getElementById('cylinder').setAttribute('src', img)
-    }
-
-    function getModelFromEchoAR(key, file){
-        let request = new XMLHttpRequest()
-        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
-        request.send()
-        request.onload = () =>{
-            console.log(request)
-            if(request.status === 200){
-                var response
-                response = JSON.parse(request.response)
-                var storageId = response['db'][file]['additionalData']['gltfHologramStorageID']
-                var url = "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
-
-                var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
-                var polynomial = []
-                for(var i = 0; i < polynomialString.length; i++){
-                    polynomial.push(parseFloat(polynomialString[i]))
-                }
-
-                for(var x = 0; x < 2; x+= 0.1){
-                    var point = document.createElement("a-entity")
-                    point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
-                    point.setAttribute("scale", ".01 .01 .01")
-                    point.setAttribute("gltf-model", url)
-                    document.getElementById("graphMarker").appendChild(point)
-                }
-            }else{
-                console.log("Error")
-            }
-        }
-    }
-
-    function polynomialFunc(coefficients, x){
-        var y = 0
-        for(var i = 0; i < coefficients.length; i++){
-            y += Math.pow(x, i) * coefficients[i]
-            console.log(y)
-        }
-        return y
-    }
-
-    getModelFromEchoAR("yellow-bar-9172", "239bac05-2d96-433b-871a-13749ed858d8")
-    loadBodyPix()
-    setInterval(predict, 100);
-</script>
 </body>
 </html>
