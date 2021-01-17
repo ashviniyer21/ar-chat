@@ -1,0 +1,51 @@
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+</head>
+
+<body>
+<canvas width="500" height="500" id="canvas"></canvas>
+<video id="webcam" autoplay playsinline width="640" height="480"></video>
+<canvas id="canvas1" class="d-none"></canvas>
+</body>
+<!-- Place your code in the script tag below. You can also use an external .js file -->
+<script>
+    const webcamElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('canvas1');
+    const webcam = new Webcam(webcamElement, 'user', canvasElement);
+    webcam.start()
+
+    var net
+    async function loadBodyPix() {
+        net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.75,
+            quantBytes: 2
+        });
+    }
+
+    async function predict() {
+        const opacity = 1;
+        const flipHorizontal = true;
+        const maskBlurAmount = 0;
+        const canvas = document.getElementById('canvas');
+
+        const segmentation = await net.segmentPerson(webcamElement,{
+            flipHorizontal: true,
+            internalResolution: 'full',
+            segmentationThreshold: .7
+        });
+
+        const coloredPartImage = bodyPix.toMask(segmentation);
+        bodyPix.drawMask(
+            canvas, webcamElement, coloredPartImage, opacity, maskBlurAmount,
+            flipHorizontal);
+    }
+
+    loadBodyPix()
+    setInterval(predict,10);
+</script>
+</html>
