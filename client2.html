@@ -13,34 +13,36 @@
 <br>
 <br>
 
-<a-scene
-        arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'
-        embedded
-        renderer="logarithmicDepthBuffer: true;"
-        vr-mode-ui="enabled: false"
-        gesture-detector
-        id="scene">
-    <a-marker id = "cameraMarker" type='barcode'  value = '5'>
-        <!--        360 / (2 * pi * radius) * image width-->
-        <a-cylinder id = "cylinder" height="1" radius="1" src="person1.jpg" open-ended="true" theta-start="50" theta-length="57" position="-1, 1, 0"></a-cylinder>
-    </a-marker>
+<iframe src="ar.html" height="800" width="600" ></iframe>
 
-    <a-marker id = "graphMarker" type='barcode'  value = '7'>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "0 0 90"></a-cylinder>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "0 90 0"></a-cylinder>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "90 0 0"></a-cylinder>
-    </a-marker>
+<!--<a-scene-->
+<!--        arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'-->
+<!--        embedded-->
+<!--        renderer="logarithmicDepthBuffer: true;"-->
+<!--        vr-mode-ui="enabled: false"-->
+<!--        gesture-detector-->
+<!--        id="scene">-->
+<!--    <a-marker id = "cameraMarker" type='barcode'  value = '5'>-->
+<!--        &lt;!&ndash;        360 / (2 * pi * radius) * image width&ndash;&gt;-->
+<!--        <a-cylinder id = "cylinder" height="1" radius="1" src="person1.jpg" open-ended="true" theta-start="50" theta-length="57" position="-1, 1, 0"></a-cylinder>-->
+<!--    </a-marker>-->
 
-    <a-entity camera></a-entity>
-</a-scene>
+<!--    <a-marker id = "graphMarker" type='barcode'  value = '7'>-->
+<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "0 0 90"></a-cylinder>-->
+<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "0 90 0"></a-cylinder>-->
+<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "90 0 0"></a-cylinder>-->
+<!--    </a-marker>-->
 
+<!--    <a-entity camera></a-entity>-->
+<!--</a-scene>-->
+
+<label for="roomId">Room ID: </label><input type="text" id="roomId">
+<button id="submit" onclick="submitRoom()">Submit</button>
 <video id="webcam" autoplay playsinline width="640" height="480"></video>
 <canvas id="canvas" height="480" width="640"></canvas>
 <canvas id="dummyCanvas" height="480" width="640"></canvas>
 <canvas id="dummyCanvas1" height="480" width="640"></canvas>
 <canvas id="dummyCanvas2" height="480" width="640"></canvas>
-<label for="roomId">Room ID: </label><input type="text" id="roomId">
-<button id="submit" onclick="submitRoom()">Submit</button>
 <p id="status"></p>
 </body>
 <script src="/socket.io/socket.io.js"></script>
