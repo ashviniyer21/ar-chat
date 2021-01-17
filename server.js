@@ -4,11 +4,12 @@ const socketIO = require('socket.io');
 const PORT = process.env.PORT || 3000;
 const INDEX = '/client2.html';
 
-const server = express()
-    .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-    .listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-const io = socketIO(server);
+const app = express();
+// server.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+//     .listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.use(express.static(__dirname));
+const http = require('http').Server(app);
+const io = socketIO(http);
 
 let connections = new Map();
 
@@ -59,4 +60,12 @@ io.on('connection', (socket) => {
        socket.broadcast.emit('image4', first, imageString);
    })
    socket.on('disconnect', () => console.log('Client disconnected'));
+});
+
+http.listen(PORT, () => {
+    console.log('listening on *:' + PORT);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/client2.html');
 });
