@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+</head>
+<body>
+
+<body>
+<canvas width="500" height="500" id="canvas"></canvas>
+<video id="webcam" autoplay playsinline width="640" height="480"></video>
+<canvas id="canvas1" class="d-none"></canvas>
+
+<script>
+    const webcamElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('canvas1');
+    const webcam = new Webcam(webcamElement, 'user', canvasElement);
+    webcam.start()
+</script>
+</body>
+</html>
