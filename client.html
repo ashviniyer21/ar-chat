@@ -28,7 +28,7 @@
     canvasElement.style.display = "none";
     const dummyCanvasElement = document.getElementById('dummyCanvas');
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
-    const webcam2 = new Webcam(otherCamElement, 'environment', dummyCanvasElement);
+    const webcam2 = new Webcam(otherCamElement, 'environment');
 
     webcam.start()
         .then(result =>{
