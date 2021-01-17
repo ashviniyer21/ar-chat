@@ -119,20 +119,22 @@
     }
     socket.on('connection-successful-1', function () {
         first = true;
-        phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-2', function () {
         first = true;
+        phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-3', function () {
-        phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-4', function (id) {
         this.id = id;
+        phone = true;
         document.getElementById('status').innerText = "Everyone has joined!";
+        console.log("First: " + first)
+        console.log("Phone: " + phone)
         update();
     });
     socket.on('room-full', function () {
