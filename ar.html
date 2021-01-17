@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Gesture Interactions - A-Frame & AR.js</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
+    <script src="gesture-detector.js"></script>
+    <script src="gesture-handler.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+</head>
+
+<body>
+
+
+<a-scene
+        arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'
+        embedded
+        renderer="logarithmicDepthBuffer: true;"
+        vr-mode-ui="enabled: false"
+        gesture-detector
+        id="scene"
+>
+    <a-assets>
+        <a-asset-item
+                id="monkey"
+                src="monkey.gltf"
+        >
+        </a-asset-item>
+        <img id="imgAsset" src="person1.jpg">
+        <video id="webcam1" autoplay playsinline width="640" height="480"></video>
+    </a-assets>
+
+    <a-marker type='barcode'  value = '5'>
+        <a-image id="imgA" position="0 0 0" scale="1 1 1" rotation="90 0 180" src="#imgAsset"></a-image>
+    </a-marker>
+    <a-entity camera></a-entity>
+</a-scene>
+<canvas id="canvas" class="d-none"></canvas>
+<canvas id="canvas1"></canvas>
+<video id="webcam" autoplay playsinline width="640" height="480"></video>
+<script>
+    const webcamElement = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    const webcam = new Webcam(webcamElement, 'user', canvas);
+    webcam.start()
+
+    var net
+
+    async function loadBodyPix() {
+        net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.75,
+            quantBytes: 2
+        });
+    }
+
+    var count = 0
+
+    async function predict() {
+        const opacity = 1;
+        const flipHorizontal = true;
+        const maskBlurAmount = 0;
+        const segmentation = await net.segmentPerson(webcamElement, {
+            flipHorizontal: true,
+            internalResolution: 'full',
+            segmentationThreshold: .7
+        });
+
+        const coloredPartImage = bodyPix.toMask(segmentation);
+        bodyPix.drawMask(
+            document.getElementById("canvas1"), webcamElement, coloredPartImage, opacity, maskBlurAmount,
+            flipHorizontal);
+
+        var canvas1 = document.getElementById("canvas1");
+        var ctx = canvas1.getContext("2d")
+        var imgData = ctx.getImageData(0, 0, canvas1.width, canvas1.height);
+        for(var i = 0; i < imgData.data.length; i+=4){
+            if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
+                red = imgData.data[i] = 0;
+                green = imgData.data[i+1] = 0;
+                blue = imgData.data[i+2] = 0;
+                alpha = imgData.data[i+3] = 0;
+            }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        var img = canvas1.toDataURL("image/png");
+
+        document.getElementById('imgA').setAttribute('src', img)
+    }
+
+    loadBodyPix()
+    setInterval(predict, 100);
+</script>
+</body>
+</html>
