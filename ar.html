@@ -6,42 +6,28 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="styles.css">
-
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
-    <script src="gesture-detector.js"></script>
-    <script src="gesture-handler.js"></script>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
 </head>
-
 <body>
-
-
 <a-scene
         arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'
         embedded
         renderer="logarithmicDepthBuffer: true;"
         vr-mode-ui="enabled: false"
         gesture-detector
-        id="scene"
->
-    <a-assets>
-        <a-asset-item
-                id="monkey"
-                src="monkey.gltf"
-        >
-        </a-asset-item>
-        <img id="imgAsset" src="person1.jpg">
-        <video id="webcam1" autoplay playsinline width="640" height="480"></video>
-    </a-assets>
+        id="scene">
 
     <a-marker type='barcode'  value = '5'>
-        <a-image id="imgA" position="0 0 0" scale="1 1 1" rotation="90 0 180" src="#imgAsset"></a-image>
+        <a-image id="imgA" position="0 0 0" scale="1 1 1" rotation="0 0 0" src="person1.jpg"></a-image>
     </a-marker>
+
     <a-entity camera></a-entity>
 </a-scene>
+
 <canvas id="canvas" class="d-none"></canvas>
 <canvas id="canvas1"></canvas>
 <video id="webcam" autoplay playsinline width="640" height="480"></video>
@@ -57,12 +43,10 @@
         net = await bodyPix.load({
             architecture: 'MobileNetV1',
             outputStride: 16,
-            multiplier: 0.75,
-            quantBytes: 2
+            multiplier: 0.5,
+            quantBytes: 1
         });
     }
-
-    var count = 0
 
     async function predict() {
         const opacity = 1;
@@ -70,7 +54,7 @@
         const maskBlurAmount = 0;
         const segmentation = await net.segmentPerson(webcamElement, {
             flipHorizontal: true,
-            internalResolution: 'full',
+            internalResolution: 'low',
             segmentationThreshold: .7
         });
 
@@ -90,8 +74,8 @@
                 alpha = imgData.data[i+3] = 0;
             }
         }
-
         ctx.putImageData(imgData, 0, 0);
+
         var img = canvas1.toDataURL("image/png");
 
         document.getElementById('imgA').setAttribute('src', img)
