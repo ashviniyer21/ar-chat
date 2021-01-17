@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>AR Chat Client</title>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
 </head>
 <body>
 <label for="roomId">Room ID: </label><input type="text" id="roomId">
@@ -12,9 +14,9 @@
 <br>
 <br>
 <div id="myMSE"></div>
-<video id="webcam" autoplay playsinline width="240" height="180"></video>
-<canvas id="canvas" class="d-none"></canvas>
-<canvas id="dummyCanvas" height="180" width="240"></canvas>
+<video id="webcam" autoplay playsinline width="640" height="480"></video>
+<canvas id="canvas" height="480" width="640"></canvas>
+<canvas id="dummyCanvas" height="480" width="640"></canvas>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -27,6 +29,7 @@
     canvasElement.style.display = "none";
     const dummyCanvasElement = document.getElementById('dummyCanvas');
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
+    loadBodyPix()
 
     webcam.start()
         .then(result =>{
@@ -35,6 +38,33 @@
         .catch(err => {
             console.log(err);
         });
+
+    var net
+    async function loadBodyPix() {
+        net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.75,
+            quantBytes: 2
+        });
+    }
+
+    async function predict() {
+        const opacity = 1;
+        const flipHorizontal = true;
+        const maskBlurAmount = 0;
+
+        const segmentation = await net.segmentPerson(webcamElement,{
+            flipHorizontal: true,
+            internalResolution: 'full',
+            segmentationThreshold: .7
+        });
+
+        const coloredPartImage = bodyPix.toMask(segmentation);
+        bodyPix.drawMask(
+            canvasElement, webcamElement, coloredPartImage, opacity, maskBlurAmount,
+            flipHorizontal);
+    }
 
     function submitRoom(){
         // console.log("here");
@@ -62,7 +92,8 @@
         update();
     })
     function update() {
-        webcam.snap();
+        // webcam.snap();
+        predict();
         // console.log("Snap");
         socket.emit('image', id, canvasElement.toDataURL());
     }
