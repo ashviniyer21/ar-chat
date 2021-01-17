@@ -18,6 +18,7 @@
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    let first = false;
     let socket = io();
     let roomInput = document.getElementById("roomId");
     let id = -1;
@@ -40,6 +41,7 @@
         socket.emit('connection-attempt', roomInput.value);
     }
     socket.on('connection-successful-1', function () {
+        first = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-2', function (id) {
@@ -51,11 +53,13 @@
         document.getElementById('status').innerText = "Room is full";
     });
     socket.on('image2', function (imageString) {
+        if(!first){
             const img = new Image;
             // console.log("Received");
             img.onload = () => { dummyCanvasElement.getContext("2d").drawImage(img, 0, 0); };
             img.src = imageString;
-        update()
+        }
+        update();
     })
     function update() {
         webcam.snap();
