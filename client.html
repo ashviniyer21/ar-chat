@@ -54,13 +54,14 @@
             const img = new Image;
             console.log("Received");
             img.onload = () => { dummyCanvasElement.getContext("2d").drawImage(img, 0, 0); };
-            img.src = imageString
+            img.src = imageString.toString('base64');
         update()
     })
     function update() {
         webcam.snap();
         console.log("Snap");
-        socket.emit('image', id, canvasElement.toDataURL());
+        let buffer = new Buffer(canvasElement.toDataURL());
+        socket.emit('image', id, buffer);
     }
 </script>
 </html>
