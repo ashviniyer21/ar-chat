@@ -142,7 +142,7 @@
         document.getElementById('status').innerText = "Room is full";
     });
     socket.on('image4', function (first, imageString) {
-        if(this.first !== first){
+        if((first === "FIRST" && !this.first) ||(first !== "FIRST" && this.first)){
             if(phone){
                 const img = new Image;
                 img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0); };
@@ -157,9 +157,11 @@
         if(!phone){
             sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
         }
-        var img = sendImageCanvas.toDataURL("imagge/png")
-
-        socket.emit('image3', first, sendImageCanvas.toDataURL("image/png"));
+        if(first) {
+            socket.emit('image3', "FIRST", sendImageCanvas.toDataURL("image/png"));
+        } else {
+            socket.emit('image3', "SECOND", sendImageCanvas.toDataURL("image/png"));
+        }
     }
 
 
