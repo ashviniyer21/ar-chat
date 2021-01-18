@@ -10,7 +10,7 @@
   --color5: #18d26e;
   --color6: #35e888;
   --white: #f2f3f4;
-  --black: #1C2833;
+  --black: #1c2833;
   --light-grey: #aaaaaa;
   --default-bg: #040404;
   --default-text-color: #424949;
@@ -54,9 +54,7 @@ button {
 .logo {
   height: 240px;
   width: 600px;
- 
 }
-
 
 button {
   display: inline-block;
