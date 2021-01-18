@@ -38,7 +38,7 @@
     receiveImageCanvas.style.display = "none";
     const maskImageCanvas = document.getElementById('dummyCanvas2');
     maskImageCanvas.style.display = "none";
-    const webcam = new Webcam(webcamElement, 'user', canvasElement);
+    const webcam = new Webcam(webcamElement, 'environment', canvasElement);
     webcam.start();
 
     var iframe = document.getElementById("arframe")
