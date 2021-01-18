@@ -119,19 +119,19 @@
     }
     socket.on('connection-successful-1', function () {
         first = true;
+        phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-2', function () {
         first = true;
-        phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-3', function () {
         document.getElementById('status').innerText = "Waiting for others to join";
+        phone = true;
     });
     socket.on('connection-successful-4', function (id) {
         this.id = id;
-        phone = true;
         document.getElementById('status').innerText = "Everyone has joined!";
         console.log("First: " + first)
         console.log("Phone: " + phone)
@@ -142,7 +142,7 @@
     });
     socket.on('image4', function (first, imageString) {
         if(this.first !== first){
-            if(!phone){
+            if(phone){
                 const img = new Image;
                 img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0); };
                 img.src = imageString;
@@ -153,7 +153,7 @@
         }
     })
     function update() {
-        if(phone){
+        if(!phone){
             sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
         }
         var img = sendImageCanvas.toDataURL("imagge/png")
