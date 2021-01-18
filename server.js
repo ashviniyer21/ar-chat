@@ -4,11 +4,12 @@ const socketIO = require('socket.io');
 const PORT = process.env.PORT || 3000;
 const INDEX = '/client.html';
 
-const server = express()
-    .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-    .listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-const io = socketIO(server);
+const app = express();
+// server.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+//     .listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.use(express.static(__dirname));
+const http = require('http').Server(app);
+const io = socketIO(http);
 
 let connections = new Map();
 
