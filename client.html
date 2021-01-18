@@ -17,9 +17,10 @@
 
 <video id="webcam" autoplay playsinline width="640" height="480"></video>
 <canvas id="canvas" height="480" width="640"></canvas>
-<canvas id="dummyCanvas" height="480" width="640"></canvas>
-<canvas id="dummyCanvas1" height="480" width="640"></canvas>
-<canvas id="dummyCanvas2" height="480" width="640"></canvas>
+<canvas id="dummyCanvas" height="240" width="320"></canvas>
+<canvas id="dummyCanvas1" height="240" width="320"></canvas>
+<canvas id="dummyCanvas2" height="240" width="320"></canvas>
+<canvas id="dummyCanvas3" height="240" width="320"></canvas>
 <label for="roomId">Room ID: </label><input type="text" id="roomId">
 <button id="submit" onclick="submitRoom()">Submit</button>
 <p id="status"></p>
@@ -34,10 +35,13 @@
     const canvasElement = document.getElementById('canvas');
     canvasElement.style.display = "none";
     const sendImageCanvas = document.getElementById('dummyCanvas');
+    sendImageCanvas.style.display = "none";
     const receiveImageCanvas = document.getElementById('dummyCanvas1');
-    receiveImageCanvas.style.display = "none";
+    // receiveImageCanvas.style.display = "none";
     const maskImageCanvas = document.getElementById('dummyCanvas2');
     maskImageCanvas.style.display = "none";
+    const maskImageCanvasFinal = document.getElementById('dummyCanvas3');
+    // maskImageCanvasFinal.style.display = "none";
     const webcam = new Webcam(webcamElement, 'environment', canvasElement);
     webcam.start();
 
@@ -56,7 +60,6 @@
         var y = 0
         for(var i = 0; i < coefficients.length; i++){
             y += Math.pow(x, i) * coefficients[i]
-            console.log(y)
         }
         return y
     }
@@ -103,7 +106,7 @@
             architecture: 'MobileNetV1',
             outputStride: 16,
             multiplier: 0.5,
-            quantBytes: 1
+            quantBytes: 2
         });
     }
 
@@ -115,20 +118,29 @@
 
             var img = new Image;
             img.src = receiveImageCanvas.toDataURL("image/png")
-
+            img.width = 320
+            img.height = 240
             const segmentation = await net.segmentPerson(img, {
                 flipHorizontal: true,
-                internalResolution: 'low',
-                segmentationThreshold: .7
+                internalResolution: 'medium',
+                segmentationThreshold: .5
             });
+            //
+            // var imgOld = new Image;
+            // img.src = maskImageCanvas.toDataURL("image/png")
+            // img.width = 320
+            // img.height = 240
 
             const coloredPartImage = bodyPix.toMask(segmentation);
             bodyPix.drawMask(
-                maskImageCanvas, webcamElement, coloredPartImage, opacity, maskBlurAmount,
+                maskImageCanvas, img, coloredPartImage, opacity, maskBlurAmount,
                 flipHorizontal);
 
             var ctx = maskImageCanvas.getContext("2d")
             var imgData = ctx.getImageData(0, 0, maskImageCanvas.width, maskImageCanvas.height);
+
+            var allBlack = true;
+
             for(var i = 0; i < imgData.data.length; i+=4){
                 if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
                     red = imgData.data[i] = 0;
@@ -136,13 +148,23 @@
                     blue = imgData.data[i+2] = 0;
                     alpha = imgData.data[i+3] = 0;
                 }
+                else{
+                    allBlack = false;
+                }
             }
             ctx.putImageData(imgData, 0, 0);
 
-            iframeContent.document.getElementById('cylinder').setAttribute('src', maskImageCanvas.toDataURL("image/png"))
+            console.log(allBlack)
+
+            if(!allBlack){
+                maskImageCanvasFinal.getContext("2d").putImageData(imgData, 0, 0)
+            }
+
+            iframeContent.document.getElementById('cylinder').setAttribute('src', maskImageCanvasFinal.toDataURL("image/png"))
         }
         catch(e){
 
+            console.log(e)
         }
     }
 
@@ -165,7 +187,7 @@
     socket.on('image2', function (imageString) {
         if(!first){
             const img = new Image;
-            img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0); };
+            img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0, 320, 240); };
             img.src = imageString;
             segmentImage()
         }
@@ -173,10 +195,8 @@
     })
     function update() {
         if(first){
-            sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
+            sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0, 320, 240);
         }
-        var img = sendImageCanvas.toDataURL("imagge/png")
-
         socket.emit('image', id, sendImageCanvas.toDataURL("image/png"));
     }
 
