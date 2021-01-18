@@ -43,5 +43,5 @@ http.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/client2.html');
+    res.sendFile(__dirname + '/client.html');
 })
