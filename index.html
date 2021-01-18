@@ -62,7 +62,7 @@
       <h3>
         <button
           id="submit"
-          onclick="showHide('loadingScreen','mainUI')"
+          onclick="showHide('loadingScreen','mainUI'); submitRoom()"
           style="margin-top: 60px; width: 225px; height: 100px; font-size: 24pt"
         >
           <img src="icons/Arrow.svg" alt="Submit" class="arrow" />
@@ -126,6 +126,13 @@
             />
           </button>
         </span>
+
+        <video hidden id="webcam" autoplay playsinline width="640" height="480"></video>
+        <canvas hidden id="canvas" height="480" width="640"></canvas>
+        <canvas hidden id="dummyCanvas" height="480" width="640"></canvas>
+        <canvas hidden id="dummyCanvas1" height="240" width="320"></canvas>
+        <canvas hidden id="dummyCanvas2" height="480" width="640"></canvas>
+        <canvas hidden id="dummyCanvas3" height="240" width="320"></canvas>
 
         <style>
           /* The Modal (background) */
@@ -302,6 +309,238 @@
               modal.style.display = "none";
             }
           };
+
+
+
+
+
+
+
+
+          let first = false;
+          let socket = io();
+          let roomInput = document.getElementById("roomId");
+          let id = -1;
+          const webcamElement = document.getElementById('webcam');
+          const canvasElement = document.getElementById('canvas');
+          canvasElement.style.display = "none";
+          const sendImageCanvas = document.getElementById('dummyCanvas');
+          sendImageCanvas.style.display = "none";
+          const receiveImageCanvas = document.getElementById('dummyCanvas1');
+          receiveImageCanvas.style.display = "none";
+          const maskImageCanvas = document.getElementById('dummyCanvas2');
+          maskImageCanvas.style.display = "none";
+          const maskImageCanvasFinal = document.getElementById('dummyCanvas3');
+          maskImageCanvasFinal.style.display = "none";
+          const webcam = new Webcam(webcamElement, 'environment', canvasElement);
+          webcam.start();
+
+          var iframe = document.getElementById("arframe")
+          var iframeContent = iframe.contentWindow
+
+
+
+          loadBodyPix()
+
+          function submitPolynomial(){
+
+          }
+
+          function polynomialFunc(coefficients, x){
+            var y = 0
+            for(var i = 0; i < coefficients.length; i++){
+              y += Math.pow(x, i) * coefficients[i]
+            }
+            return y
+          }
+
+          function spawnPolynomial(key, file){
+            let request = new XMLHttpRequest()
+            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+            request.send()
+            request.onload = () =>{
+              console.log(request)
+              if(request.status === 200){
+                var response
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+                var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
+                var polynomial = []
+                for(var i = 0; i < polynomialString.length; i++){
+                  polynomial.push(parseFloat(polynomialString[i]))
+                }
+
+                for(var x = 0; x < 2; x+= 0.1){
+                  var point = document.createElement("a-entity")
+                  point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
+                  point.setAttribute("scale", ".1 .1 .1")
+                  point.setAttribute("gltf-model", url)
+                  iframeContent.document.getElementById("graphMarker").appendChild(point)
+                }
+              }else{
+                console.log("Error")
+              }
+            }
+            return ""
+          }
+
+
+          //https://free3d.com/3d-model/low-poly-chess-black-white-48044.html
+          function setupChessBoardEchoAR(key, file){
+            let request = new XMLHttpRequest()
+            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+            request.send()
+            request.onload = () =>{
+              console.log(request)
+              if(request.status === 200){
+                var response
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+                iframeContent.document.getElementById("chess").setAttribute("gltf-model", url)
+
+              }else{
+                console.log("Error")
+              }
+            }
+            return ""
+          }
+
+          //https://free3d.com/3d-model/industry-robot-arm-9499.html
+          function setupArmModelEchoAR(key, file){
+            let request = new XMLHttpRequest()
+            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+            request.send()
+            request.onload = () =>{
+              console.log(request)
+              if(request.status === 200){
+                var response
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+                iframeContent.document.getElementById("arm").setAttribute("gltf-model", url)
+
+              }else{
+                console.log("Error")
+              }
+            }
+            return ""
+          }
+
+
+          let EchoARKey = "yellow-bar-9172"
+          let pointFile = "239bac05-2d96-433b-871a-13749ed858d8"
+          let chessFile = "c8119589-9bd8-4d8a-a6b1-897d213fb21a"
+          let armFile = "40a55936-9716-4109-9dfe-898329e081ad"
+          spawnPolynomial(EchoARKey, pointFile)
+          setupChessBoardEchoAR(EchoARKey, chessFile)
+          setupArmModelEchoAR(EchoARKey, armFile)
+
+
+          var net
+          async function loadBodyPix() {
+            net = await bodyPix.load({
+              architecture: 'MobileNetV1',
+              outputStride: 16,
+              multiplier: 0.75,
+              quantBytes: 1
+            });
+          }
+
+          async function segmentImage(){
+            try{
+              const opacity = 1;
+              const flipHorizontal = true;
+              const maskBlurAmount = 0
+
+              var img = new Image;
+              img.src = sendImageCanvas.toDataURL("image/png")
+              img.width = 640
+              img.height = 480
+              const segmentation = await net.segmentPerson(webcamElement, {
+                flipHorizontal: true,
+                internalResolution: 'low',
+                segmentationThreshold: .6
+              });
+
+
+              const coloredPartImage = bodyPix.toMask(segmentation);
+              bodyPix.drawMask(
+                      maskImageCanvas, img, coloredPartImage, opacity, maskBlurAmount,
+                      flipHorizontal);
+
+
+
+              var img1 = new Image;
+              img1.src = maskImageCanvas.toDataURL("image/png")
+              maskImageCanvasFinal.getContext("2d").drawImage(img1, 0, 0, 320, 240);
+
+
+
+
+            }
+            catch(e){
+
+              console.log(e)
+            }
+          }
+
+          function removeBlackPixels(){
+
+            var ctx = receiveImageCanvas.getContext("2d")
+            var imgData = ctx.getImageData(0, 0, maskImageCanvas.width, maskImageCanvas.height);
+            for(var i = 0; i < imgData.data.length; i+=4){
+              if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
+                red = imgData.data[i] = 0;
+                green = imgData.data[i+1] = 0;
+                blue = imgData.data[i+2] = 0;
+                alpha = imgData.data[i+3] = 0;
+              }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+          }
+
+          function submitRoom(){
+            // console.log("here");
+            socket.emit('connection-attempt', roomInput.value);
+          }
+          socket.on('connection-successful-1', function () {
+            first = true;
+            // document.getElementById('status').innerText = "Waiting for others to join";
+          });
+          socket.on('connection-successful-2', function (id) {
+            // document.getElementById('status').innerText = "Others have joined!";
+            this.id = id;
+            update();
+          });
+          socket.on('room-full', function () {
+            // document.getElementById('status').innerText = "Room is full";
+          });
+          socket.on('image2', function (imageString) {
+            if(!first){
+              const img = new Image;
+              img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0, 320, 240); };
+              img.src = imageString;
+              removeBlackPixels();
+              iframeContent.document.getElementById('cylinder').setAttribute('src', receiveImageCanvas.toDataURL("image/png"))
+            }
+            update();
+          })
+          function update() {
+            if(first){
+              sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0, 640, 480);
+              segmentImage()
+            }
+            socket.emit('image', id, maskImageCanvas.toDataURL("image/png"));
+          }
+
+
+
         </script>
       </div>
     </div>
