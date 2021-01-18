@@ -37,3 +37,11 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
+
+http.listen(PORT, () => {
+    console.log('listening on *:' + PORT);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/client2.html');
+})
