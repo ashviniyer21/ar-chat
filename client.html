@@ -13,29 +13,7 @@
 <br>
 <br>
 
-<iframe src="ar.html" height="800" width="600" ></iframe>
-
-<!--<a-scene-->
-<!--        arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3; sourceWidth: 600; sourceHeight: 400; displayWidth: 600; displayHeight: 400; canvasWidth: 600; canvasHeight: 400; debugUIEnabled: false;'-->
-<!--        embedded-->
-<!--        renderer="logarithmicDepthBuffer: true;"-->
-<!--        vr-mode-ui="enabled: false"-->
-<!--        gesture-detector-->
-<!--        id="scene">-->
-<!--    <a-marker id = "cameraMarker" type='barcode'  value = '5'>-->
-<!--        &lt;!&ndash;        360 / (2 * pi * radius) * image width&ndash;&gt;-->
-<!--        <a-cylinder id = "cylinder" height="1" radius="1" src="person1.jpg" open-ended="true" theta-start="50" theta-length="57" position="-1, 1, 0"></a-cylinder>-->
-<!--    </a-marker>-->
-
-<!--    <a-marker id = "graphMarker" type='barcode'  value = '7'>-->
-<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "0 0 90"></a-cylinder>-->
-<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "0 90 0"></a-cylinder>-->
-<!--        <a-cylinder color="black" height="3" radius=".01" rotation = "90 0 0"></a-cylinder>-->
-<!--    </a-marker>-->
-
-<!--    <a-entity camera></a-entity>-->
-<!--</a-scene>-->
-
+<iframe id="arframe" src="ar.html" height="800" width="600" > </iframe>
 
 <label for="roomId">Room ID: </label><input type="text" id="roomId">
 <button id="submit" onclick="submitRoom()">Submit</button>
@@ -67,10 +45,10 @@
     webcam.start();
     loadBodyPix()
 
+    var iframe = document.getElementById("arframe")
+    var iframeContent = iframe.contentWindow
 
-    let EchoARKey = "yellow-bar-9172"
-    let EchoARFile = "239bac05-2d96-433b-871a-13749ed858d8"
-    getModelFromEchoAR(EchoARKey, EchoARFile)
+
 
     function submitPolynomial(){
 
@@ -109,13 +87,17 @@
                     point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
                     point.setAttribute("scale", ".01 .01 .01")
                     point.setAttribute("gltf-model", url)
-                    document.getElementById("graphMarker").appendChild(point)
+                    iframeContent.document.getElementById("graphMarker").appendChild(point)
                 }
             }else{
                 console.log("Error")
             }
         }
     }
+
+    let EchoARKey = "yellow-bar-9172"
+    let EchoARFile = "239bac05-2d96-433b-871a-13749ed858d8"
+    getModelFromEchoAR(EchoARKey, EchoARFile)
 
     var net
     async function loadBodyPix() {
@@ -159,7 +141,7 @@
             }
             ctx.putImageData(imgData, 0, 0);
 
-            document.getElementById('cylinder').setAttribute('src', maskImageCanvas.toDataURL("image/png"))
+            iframeContent.document.getElementById('cylinder').setAttribute('src', maskImageCanvas.toDataURL("image/png"))
         }
         catch(e){
 
