@@ -141,13 +141,13 @@
     socket.on('room-full', function () {
         document.getElementById('status').innerText = "Room is full";
     });
-    socket.on('image4', function (object) {
-        if(this.first !== object.boolean){
+    socket.on('image4', function (first, imageString) {
+        if(this.first === first){
             console.log(first);
             if(phone){
                 const img = new Image;
                 img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0); };
-                img.src = object.image;
+                img.src = imageString;
                 segmentImage();
             } else {
                 update();
@@ -159,7 +159,7 @@
             sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
         }
 
-        socket.emit('image3', {image: sendImageCanvas.toDataURL("image/png"), boolean: first});
+        socket.emit('image3', first, sendImageCanvas.toDataURL("image/png"));
     }
 
 

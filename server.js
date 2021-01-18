@@ -56,8 +56,8 @@ io.on('connection', (socket) => {
         // console.log("Send");
         socket.broadcast.emit('image2', imageString);
     });
-   socket.on('image3', (object) => {
-       socket.broadcast.emit('image4', object);
+   socket.on('image3', (first, imageString) => {
+       socket.broadcast.emit('image4', first, imageString);
    })
    socket.on('disconnect', () => console.log('Client disconnected'));
 });
