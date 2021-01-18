@@ -40,13 +40,13 @@ io.on('connection', (socket) => {
            connections.set(id, connections.get(id) + 1);
            if(connections.get(id) === 1){
                // console.log("joined");
-               io.to(id).emit('connection-successful-1');
+               socket.emit('connection-successful-1');
            } else if(connections.get(id) === 2){
-               io.to(id).emit('connection-successful-2');
+               socket.emit('connection-successful-2');
            } else if(connections.get(id) === 3){
-               io.to(id).emit('connection-successful-3');
+               socket.emit('connection-successful-3');
            } else {
-               io.to(id).emit('connection-successful-4', id);
+               socket.emit('connection-successful-4', id);
            }
        } else {
            io.to(socket.id).emit('room-full');
