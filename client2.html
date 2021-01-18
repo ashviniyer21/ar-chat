@@ -56,8 +56,9 @@
     const canvasElement = document.getElementById('canvas');
     canvasElement.style.display = "none";
     const sendImageCanvas = document.getElementById('dummyCanvas');
+    sendImageCanvas.display = "none";
     const receiveImageCanvas = document.getElementById('dummyCanvas1');
-    receiveImageCanvas.style.display = "none";
+    // receiveImageCanvas.style.display = "none";
     const maskImageCanvas = document.getElementById('dummyCanvas2');
     maskImageCanvas.style.display = "none";
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
