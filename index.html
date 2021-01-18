@@ -42,28 +42,37 @@
     <link type="text/css" href="style.css" rel="stylesheet" />
   </head>
 
-  <body class="container-fluid">
-    <div id="loadingScreen" class="loadingScreen">
-      <h1>AR Chat</h1>
-      <h2>
-        <label for="roomId">Room ID: </label><input type="text" id="roomId" />
-      </h2>
+  <body class="container-fluid d-flex justify-content-center">
+    <br />
+    <div id="loadingScreen" style="margin-top: 300px">
+      <h1 style="font-size: 100pt">AR Chat</h1>
+      <div style="margin-top: 75px">
+        <label for="roomId" style="font-size: 50pt">Room ID: </label
+        ><br /><input
+          type="text"
+          id="roomId"
+          style="width: 600px; height: 70px; font-size: 40pt"
+        />
+      </div>
       <h3>
-        <button id="submit" onclick="showHide('loadingScreen','mainUI')">
+        <button
+          id="submit"
+          onclick="showHide('loadingScreen','mainUI')"
+          style="margin-top: 50px; width: 150px; height: 100px; font-size: 24pt"
+        >
           Submit
         </button>
       </h3>
     </div>
 
-    <div id="mainUI" style="display: none;">
+    <div id="mainUI" style="display: none">
       <div class="topbar">
         <h1>Room Number: <span class="makeEdits">52</span></h1>
       </div>
       <div class="content">
-        <iframe id="arframe" src="ar.html" width="800" height="600"></iframe>
+        <iframe id="arframe" src="ar.html" width="1000" height="750"></iframe>
       </div>
-      <div class="bottomButtons">
-
+      <div class="bottomButtons d-flex justify-content-around">
         <button onclick="showHide('mainUI','loadingScreen')">
           <img src="icons/Leave.svg" alt="Leave Call" class="leave" />
         </button>
@@ -80,24 +89,24 @@
           </button>
         </span>
 
-          <span id="hideCam" style="display: none">
-            <button onclick="showHide('hideCam','showCam')">
-              <img
-                src="icons/Disable_Camera.svg"
-                alt="Camera Disabled"
-                class="camera"
-              />
-            </button>
-          </span>
-
-          <button onclick="">
+        <span id="hideCam" style="display: none">
+          <button onclick="showHide('hideCam','showCam')">
             <img
-              src="icons/Add_Object_1.svg"
-              alt="Add Object"
-              class="addObject"
+              src="icons/Disable_Camera.svg"
+              alt="Camera Disabled"
+              class="camera"
             />
           </button>
-        </div>
+        </span>
+
+        <button onclick="">
+          <img
+            src="icons/Add_Object_1.svg"
+            alt="Add Object"
+            class="addObject"
+          />
+        </button>
       </div>
+    </div>
   </body>
 </html>

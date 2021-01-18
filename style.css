@@ -3,32 +3,35 @@
 --------------------------------------------------------------*/
 
 :root {
-    --color1: #4285f4;
-    --color2: #db4437;
-    --color3: #f4b400;
-    --color4: #0f9d58;
-    --color5: #18d26e;
-    --color6: #35e888;
-    --white: #fff;
-    --black: #000;
-    --light-grey: #aaaaaa;
-    --default-bg: #040404;
-    --default-text-color: #404040;
-    --alt-hint-of-transparency-black: rgba(0, 0, 0, 0.9);
-    --hint-of-transparency-black: rgba(0, 0, 0, 0.6);
-    --medium-transparency-grey: rgba(204, 204, 204, 0.1);
-    --hint-of-transparency-white: rgba(255, 255, 255, 0.6);
-    --light-transparency-white: rgba(255, 255, 255, 0.3);
-    --light-transparency-black: rgba(0, 0, 0, 0.3);
-    --medium-transparency-white: rgba(255, 255, 255, 0.12);
-    --heavy-transparency-white: rgba(255, 255, 255, 0.05);
+  --color1: #4285f4;
+  --color2: #db4437;
+  --color3: #f4b400;
+  --color4: #0f9d58;
+  --color5: #18d26e;
+  --color6: #35e888;
+  --white: #fff;
+  --black: #000;
+  --light-grey: #aaaaaa;
+  --default-bg: #040404;
+  --default-text-color: #404040;
+  --alt-hint-of-transparency-black: rgba(0, 0, 0, 0.9);
+  --hint-of-transparency-black: rgba(0, 0, 0, 0.6);
+  --medium-transparency-grey: rgba(204, 204, 204, 0.1);
+  --hint-of-transparency-white: rgba(255, 255, 255, 0.6);
+  --light-transparency-white: rgba(255, 255, 255, 0.3);
+  --light-transparency-black: rgba(0, 0, 0, 0.3);
+  --medium-transparency-white: rgba(255, 255, 255, 0.12);
+  --heavy-transparency-white: rgba(255, 255, 255, 0.05);
 }
 
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
 body {
-    font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 h1,
@@ -37,32 +40,55 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: "Raleway", sans-serif;
+  font-family: "Raleway", sans-serif;
 }
 
 /*--------------------------------------------------------------
 # loadingScreen
 --------------------------------------------------------------*/
+button {
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  font: 400 13.3333px;
+  padding: 4px 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--light-grey);
+  border-image: initial;
+  border-radius: 6px;
+}
 
+input {
+  display: inline-block;
+  font: 400 13.3333px;
+  padding: 4px 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--light-grey);
+  border-image: initial;
+  border-radius: 6px;
+}
 
-
-
+.loadingScreen{
+  vertical-align: middle ;
+}
 /*--------------------------------------------------------------
 # mainUI
 --------------------------------------------------------------*/
 
 .leave {
-    height: 40px;
-    width: 40px;
+  height: 80px;
+  width: 160px;
 }
 
 .addObject {
-    height: 40px;
-    width: 40px;
+  height: 80px;
+  width: 160px;
 }
 
 .camera {
-    height: 40px;
-    width: 40px;
-
+  height: 80px;
+  width: 160px;
 }
+
