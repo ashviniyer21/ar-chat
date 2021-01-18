@@ -142,7 +142,7 @@
         document.getElementById('status').innerText = "Room is full";
     });
     socket.on('image4', function (first, imageString) {
-        if(this.first !== first){
+        if(this.first === first){
             console.log(first);
             if(phone){
                 const img = new Image;
@@ -158,7 +158,6 @@
         if(!phone){
             sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0);
         }
-        var img = sendImageCanvas.toDataURL("imagge/png")
 
         socket.emit('image3', first, sendImageCanvas.toDataURL("image/png"));
     }
