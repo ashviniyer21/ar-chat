@@ -9,6 +9,10 @@
     <!-- <link href="favicon.png" rel="icon"/> -->
 
     <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Vendor CSS Files -->
     <!-- Font Awesome -->
@@ -42,28 +46,57 @@
     <link type="text/css" href="style.css" rel="stylesheet" />
   </head>
 
-  <body class="container-fluid">
-    <div id="loadingScreen" class="loadingScreen">
-      <h1>AR Chat</h1>
-      <h2>
-        <label for="roomId">Room ID: </label><input type="text" id="roomId" />
-      </h2>
+  <body class="container-fluid d-flex justify-content-center">
+    <br />
+    <div id="loadingScreen" style="margin-top: 80px">
+      <img src="icons/Logo.svg" alt="Camera Enabled" class="logo" />
+      <h1 style="font-size: 100pt; text-align: center">AR Chat</h1>
+      <div style="margin-top: 14px">
+        <label for="roomId" style="font-size: 50pt">Room ID: </label
+        ><br /><input
+          type="text"
+          id="roomId"
+          style="width: 525px; height: 70px; font-size: 40pt"
+        />
+      </div>
       <h3>
-        <button id="submit" onclick="showHide('loadingScreen','mainUI')">
-          Submit
+        <button
+          id="submit"
+          onclick="showHide('loadingScreen','mainUI')"
+          style="margin-top: 60px; width: 225px; height: 100px; font-size: 24pt"
+        >
+          <img src="icons/Arrow.svg" alt="Submit" class="arrow" />
         </button>
       </h3>
     </div>
 
-    <div id="mainUI" style="display: none;">
-      <div class="topbar">
-        <h1>Room Number: <span class="makeEdits">52</span></h1>
+    <div id="mainUI" style="display: none">
+      <div class="topbar" style="margin-top: 0px; margin-bottom: 0px">
+        <h1 style="font-size: 30pt; text-align: center">
+          Room Number: <span class="makeEdits">52</span>
+        </h1>
       </div>
       <div class="content">
-        <iframe id="arframe" src="ar.html" width="800" height="600"></iframe>
+        <iframe
+          id="arframe"
+          src="ar.html"
+          width="1148"
+          height="861"
+          style="margin-top: 0px; margin-bottom: 0px"
+        ></iframe>
+        <img
+          src="icons/No_Camera.svg"
+          alt="No Camera"
+          width="1148"
+          height="861"
+          id="noImage"
+          style="display: none"
+        />
       </div>
-      <div class="bottomButtons">
-
+      <div
+        class="bottomButtons d-flex justify-content-around"
+        style="margin-top: 0px; margin-bottom: 0px"
+      >
         <button onclick="showHide('mainUI','loadingScreen')">
           <img src="icons/Leave.svg" alt="Leave Call" class="leave" />
         </button>
@@ -71,7 +104,9 @@
         <!-- this is a very dirty toggle, u need to get the camera state and set the other one's display attr. to none -->
 
         <span id="showCam">
-          <button onclick="showHide('showCam','hideCam')">
+          <button
+            onclick="compoundShowHide('showCam','arframe','hideCam','noImage')"
+          >
             <img
               src="icons/Camera_Enable.svg"
               alt="Camera Enabled"
@@ -80,24 +115,195 @@
           </button>
         </span>
 
-          <span id="hideCam" style="display: none">
-            <button onclick="showHide('hideCam','showCam')">
-              <img
-                src="icons/Disable_Camera.svg"
-                alt="Camera Disabled"
-                class="camera"
-              />
-            </button>
-          </span>
-
-          <button onclick="">
+        <span id="hideCam" style="display: none">
+          <button
+            onclick="compoundShowHide('hideCam','noImage','showCam','arframe')"
+          >
             <img
-              src="icons/Add_Object_1.svg"
-              alt="Add Object"
-              class="addObject"
+              src="icons/Disable_Camera.svg"
+              alt="Camera Disabled"
+              class="camera"
             />
           </button>
+        </span>
+
+        <style>
+          /* The Modal (background) */
+          .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: var(--black); /* Fallback color */
+            background-color: var(--black); /* Black w/ opacity */
+            -webkit-animation-name: fadeIn; /* Fade in the background */
+            -webkit-animation-duration: 0.4s;
+            animation-name: fadeIn;
+            animation-duration: 0.4s;
+          }
+
+          /* Modal Content */
+          .modal-content {
+            position: fixed;
+            bottom: 0;
+            background-color: var(--white);
+            width: 80%;
+            -webkit-animation-name: slideIn;
+            -webkit-animation-duration: 0.4s;
+            animation-name: slideIn;
+            animation-duration: 0.4s;
+          }
+
+          /* The Close Button */
+          .close {
+            color: var(--white);
+            float: right;
+            transform: translate(30 px);
+            font-size: 28px;
+            font-weight: bold;
+          }
+
+          .close:hover,
+          .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+          }
+
+          .modal-header {
+            padding: 2px 16px;
+            background-color: var(--default-text-color);
+            color: var(--white);
+          }
+
+          .modal-body {
+            padding: 2px 16px;
+          }
+
+          .modal-footer {
+            padding: 2px 16px;
+            background-color: var(--default-text-color);
+            color: var(--white);
+          }
+
+          /* Add Animation */
+          @-webkit-keyframes slideIn {
+            from {
+              bottom: -300px;
+              opacity: 0;
+            }
+            to {
+              bottom: 0;
+              opacity: 0.5;
+            }
+          }
+
+          @keyframes slideIn {
+            from {
+              bottom: -300px;
+              opacity: 0;
+            }
+            to {
+              bottom: 0;
+              opacity: 0.5;
+            }
+          }
+
+          @-webkit-keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 0.5;
+            }
+          }
+
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 0.5;
+            }
+          }
+        </style>
+
+        <button id="myBtn">
+          <img
+            src="icons/Add_Object_1.svg"
+            alt="Add Object"
+            class="addObject"
+          />
+        </button>
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+          <!-- Modal content -->
+          <div
+            class="modal-content"
+            style="margin-left: 137px; margin-bottom: 20px"
+          >
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h1 style="margin-top: 10px; margin-bottom: 10px">Polynomial</h1>
+            </div>
+            <div class="modal-body" style="height: 64px">
+              <input
+                type="text"
+                style="
+                  width: 1058px;
+                  height: 60px;
+                  background-color: unset;
+                  font-size: 24pt;
+                "
+                placeholder="txt"
+              />
+            </div>
+            <div class="modal-footer">
+              <button style="width: 1050px; font-size: 16pt" class="update">
+                Update
+              </button>
+            </div>
+          </div>
         </div>
+
+        <script>
+          // Get the modal
+          var modal = document.getElementById("myModal");
+
+          // Get the button that opens the modal
+          var btn = document.getElementById("myBtn");
+
+          // Get the <span> elements that closes the modal
+          var span = document.getElementsByClassName("close")[0];
+          var update = document.getElementsByClassName("update")[0];
+
+          // When the user clicks the button, open the modal
+          btn.onclick = function () {
+            modal.style.display = "block";
+          };
+
+          // When the user clicks on <span> (x), close the modal
+          span.onclick = function () {
+            modal.style.display = "none";
+          };
+
+          // When the user clicks on update button, close the modal
+          update.onclick = function () {
+            modal.style.display = "none";
+          };
+
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function (event) {
+            if (event.target == modal) {
+              modal.style.display = "none";
+            }
+          };
+        </script>
       </div>
+    </div>
   </body>
 </html>

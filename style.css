@@ -3,32 +3,36 @@
 --------------------------------------------------------------*/
 
 :root {
-    --color1: #4285f4;
-    --color2: #db4437;
-    --color3: #f4b400;
-    --color4: #0f9d58;
-    --color5: #18d26e;
-    --color6: #35e888;
-    --white: #fff;
-    --black: #000;
-    --light-grey: #aaaaaa;
-    --default-bg: #040404;
-    --default-text-color: #404040;
-    --alt-hint-of-transparency-black: rgba(0, 0, 0, 0.9);
-    --hint-of-transparency-black: rgba(0, 0, 0, 0.6);
-    --medium-transparency-grey: rgba(204, 204, 204, 0.1);
-    --hint-of-transparency-white: rgba(255, 255, 255, 0.6);
-    --light-transparency-white: rgba(255, 255, 255, 0.3);
-    --light-transparency-black: rgba(0, 0, 0, 0.3);
-    --medium-transparency-white: rgba(255, 255, 255, 0.12);
-    --heavy-transparency-white: rgba(255, 255, 255, 0.05);
+  --color1: #4285f4;
+  --color2: #db4437;
+  --color3: #f4b400;
+  --color4: #0f9d58;
+  --color5: #18d26e;
+  --color6: #35e888;
+  --white: #f2f3f4;
+  --black: #1c2833;
+  --light-grey: #aaaaaa;
+  --default-bg: #040404;
+  --default-text-color: #424949;
+  --alt-hint-of-transparency-black: rgba(0, 0, 0, 0.9);
+  --hint-of-transparency-black: rgba(0, 0, 0, 0.6);
+  --medium-transparency-grey: rgba(204, 204, 204, 0.1);
+  --hint-of-transparency-white: rgba(255, 255, 255, 0.6);
+  --light-transparency-white: rgba(255, 255, 255, 0.3);
+  --light-transparency-black: rgba(0, 0, 0, 0.3);
+  --medium-transparency-white: rgba(255, 255, 255, 0.12);
+  --heavy-transparency-white: rgba(255, 255, 255, 0.05);
 }
 
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
 body {
-    font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--default-bg);
 }
 
 h1,
@@ -36,33 +40,72 @@ h2,
 h3,
 h4,
 h5,
-h6 {
-    font-family: "Raleway", sans-serif;
+h6,
+label,
+button {
+  color: var(--white);
+  stroke: var(--black);
+  stroke-width: 1em;
 }
 
 /*--------------------------------------------------------------
 # loadingScreen
 --------------------------------------------------------------*/
+.logo {
+  height: 240px;
+  width: 600px;
+}
 
+button {
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  font: 400 13.3333px;
+  padding: 4px 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  border-image: initial;
+  border-radius: 6px;
+}
 
+input {
+  display: inline-block;
+  font: 400 13.3333px;
+  padding: 4px 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: black;
+  background-color: var(--default-text-color);
+  border-image: initial;
+  border-radius: 6px;
+}
 
+.loadingScreen {
+  vertical-align: middle;
+}
 
+.arrow {
+  height: 80px;
+  width: 160px;
+  transform: translate(-30px, -30px);
+}
 /*--------------------------------------------------------------
 # mainUI
 --------------------------------------------------------------*/
 
 .leave {
-    height: 40px;
-    width: 40px;
+  height: 80px;
+  width: 240px;
 }
 
 .addObject {
-    height: 40px;
-    width: 40px;
+  height: 80px;
+  width: 240px;
 }
 
 .camera {
-    height: 40px;
-    width: 40px;
-
+  height: 80px;
+  width: 240px;
 }
