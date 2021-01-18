@@ -1,0 +1,68 @@
+/*--------------------------------------------------------------
+# Color Pallete
+--------------------------------------------------------------*/
+
+:root {
+    --color1: #4285f4;
+    --color2: #db4437;
+    --color3: #f4b400;
+    --color4: #0f9d58;
+    --color5: #18d26e;
+    --color6: #35e888;
+    --white: #fff;
+    --black: #000;
+    --light-grey: #aaaaaa;
+    --default-bg: #040404;
+    --default-text-color: #404040;
+    --alt-hint-of-transparency-black: rgba(0, 0, 0, 0.9);
+    --hint-of-transparency-black: rgba(0, 0, 0, 0.6);
+    --medium-transparency-grey: rgba(204, 204, 204, 0.1);
+    --hint-of-transparency-white: rgba(255, 255, 255, 0.6);
+    --light-transparency-white: rgba(255, 255, 255, 0.3);
+    --light-transparency-black: rgba(0, 0, 0, 0.3);
+    --medium-transparency-white: rgba(255, 255, 255, 0.12);
+    --heavy-transparency-white: rgba(255, 255, 255, 0.05);
+}
+
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Raleway", sans-serif;
+}
+
+/*--------------------------------------------------------------
+# loadingScreen
+--------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------
+# mainUI
+--------------------------------------------------------------*/
+
+.leave {
+    height: 40px;
+    width: 40px;
+}
+
+.addObject {
+    height: 40px;
+    width: 40px;
+}
+
+.camera {
+    height: 40px;
+    width: 40px;
+
+}
