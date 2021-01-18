@@ -47,7 +47,7 @@
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    let first = false;
+    let first = "Second";
     let phone = false;
     let socket = io();
     let roomInput = document.getElementById("roomId");
@@ -119,12 +119,12 @@
         socket.emit('connection-attempt-2', roomInput.value);
     }
     socket.on('connection-successful-1', function () {
-        first = true;
+        first = "First";
         phone = true;
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-2', function () {
-        first = true;
+        first = "First";
         document.getElementById('status').innerText = "Waiting for others to join";
     });
     socket.on('connection-successful-3', function () {
@@ -142,7 +142,7 @@
         document.getElementById('status').innerText = "Room is full";
     });
     socket.on('image4', function (first, imageString) {
-        if(this.first === first){
+        if(this.first !== first){
             console.log(first);
             if(phone){
                 const img = new Image;
