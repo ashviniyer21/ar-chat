@@ -64,7 +64,7 @@
         return y
     }
 
-    function getModelFromEchoAR(key, file){
+    function spawnPolynomial(key, file){
         let request = new XMLHttpRequest()
         request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
         request.send()
@@ -73,8 +73,8 @@
             if(request.status === 200){
                 var response
                 response = JSON.parse(request.response)
-                var storageId = response['db'][file]['additionalData']['gltfHologramStorageID']
-                var url = "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
 
                 var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
                 var polynomial = []
@@ -85,7 +85,7 @@
                 for(var x = 0; x < 2; x+= 0.1){
                     var point = document.createElement("a-entity")
                     point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
-                    point.setAttribute("scale", ".01 .01 .01")
+                    point.setAttribute("scale", ".1 .1 .1")
                     point.setAttribute("gltf-model", url)
                     iframeContent.document.getElementById("graphMarker").appendChild(point)
                 }
@@ -93,11 +93,62 @@
                 console.log("Error")
             }
         }
+        return ""
     }
 
+
+    //https://free3d.com/3d-model/low-poly-chess-black-white-48044.html
+    function setupChessBoardEchoAR(key, file){
+        let request = new XMLHttpRequest()
+        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+        request.send()
+        request.onload = () =>{
+            console.log(request)
+            if(request.status === 200){
+                var response
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+                iframeContent.document.getElementById("chess").setAttribute("gltf-model", url)
+
+            }else{
+                console.log("Error")
+            }
+        }
+        return ""
+    }
+
+    //https://free3d.com/3d-model/industry-robot-arm-9499.html
+    function setupArmModelEchoAR(key, file){
+        let request = new XMLHttpRequest()
+        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+        request.send()
+        request.onload = () =>{
+            console.log(request)
+            if(request.status === 200){
+                var response
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+                iframeContent.document.getElementById("arm").setAttribute("gltf-model", url)
+
+            }else{
+                console.log("Error")
+            }
+        }
+        return ""
+    }
+
+
     let EchoARKey = "yellow-bar-9172"
-    let EchoARFile = "239bac05-2d96-433b-871a-13749ed858d8"
-    getModelFromEchoAR(EchoARKey, EchoARFile)
+    let pointFile = "239bac05-2d96-433b-871a-13749ed858d8"
+    let chessFile = "c8119589-9bd8-4d8a-a6b1-897d213fb21a"
+    let armFile = "40a55936-9716-4109-9dfe-898329e081ad"
+    spawnPolynomial(EchoARKey, pointFile)
+    setupChessBoardEchoAR(EchoARKey, chessFile)
+    setupArmModelEchoAR(EchoARKey, armFile)
 
 
     var net
