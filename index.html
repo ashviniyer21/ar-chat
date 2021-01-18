@@ -1,548 +1,563 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AR Chat Client</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Chat Client</title>
 
-    <!-- Favicons -->
-    <!-- <link href="favicon.png" rel="icon"/> -->
+  <!-- Favicons -->
+  <!-- <link href="favicon.png" rel="icon"/> -->
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet"
+  />
 
-    <!-- Vendor CSS Files -->
-    <!-- Font Awesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-      rel="stylesheet"
-    />
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- BS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
-      crossorigin="anonymous"
-    />
+  <!-- Vendor CSS Files -->
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- BS -->
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+          crossorigin="anonymous"
+  />
 
-    <!-- Vendor JS Files -->
-    <!-- BS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Main JS File -->
-    <script src="main.js"></script>
-    <!-- Main CSS File -->
-    <link type="text/css" href="style.css" rel="stylesheet" />
-  </head>
+  <!-- Vendor JS Files -->
+  <!-- BS -->
+  <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+          crossorigin="anonymous"
+  ></script>
+  <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- Main JS File -->
+  <script src="main.js"></script>
+  <!-- Main CSS File -->
+  <link type="text/css" href="style.css" rel="stylesheet" />
+</head>
 
-  <body class="container-fluid d-flex justify-content-center">
-    <br />
-    <div id="loadingScreen" style="margin-top: 80px">
-      <img src="icons/Logo.svg" alt="Camera Enabled" class="logo" />
-      <h1 style="font-size: 100pt; text-align: center">AR Chat</h1>
-      <div style="margin-top: 14px">
-        <label for="roomId" style="font-size: 50pt">Room ID: </label
-        ><br /><input
+<body class="container-fluid d-flex justify-content-center">
+<br />
+<div id="loadingScreen" style="margin-top: 80px">
+  <img src="icons/Logo.svg" alt="Camera Enabled" class="logo" />
+  <h1 style="font-size: 100pt; text-align: center">AR Chat</h1>
+  <div style="margin-top: 14px">
+    <label for="roomId" style="font-size: 50pt">Room ID: </label
+    ><br /><input
           type="text"
           id="roomId"
           style="width: 525px; height: 70px; font-size: 40pt"
-        />
-      </div>
-      <h3>
-        <button
-          id="submit"
-          onclick="showHide('loadingScreen','mainUI'); submitRoom()"
-          style="margin-top: 60px; width: 225px; height: 100px; font-size: 24pt"
-        >
-          <img src="icons/Arrow.svg" alt="Submit" class="arrow" />
-        </button>
-      </h3>
-    </div>
+  />
+  </div>
+  <h3>
+    <button
+            id="submit"
+            onclick="showHide('loadingScreen','mainUI'); submitRoom()"
+            style="margin-top: 60px; width: 225px; height: 100px; font-size: 24pt"
+    >
+      <img src="icons/Arrow.svg" alt="Submit" class="arrow" />
+    </button>
+  </h3>
+</div>
 
-    <div id="mainUI" style="display: none">
-      <div class="topbar" style="margin-top: 0px; margin-bottom: 0px">
-        <h1 style="font-size: 30pt; text-align: center">
-          Room Number: <span class="makeEdits">52</span>
-        </h1>
-      </div>
-      <div class="content">
-        <iframe
-          id="arframe"
-          src="ar.html"
-          width="1148"
-          height="861"
+<div id="mainUI" style="display: none">
+  <div class="topbar" style="margin-top: 0px; margin-bottom: 0px">
+    <h1 style="font-size: 30pt; text-align: center">
+      Room Number: <span class="makeEdits">52</span>
+    </h1>
+  </div>
+  <div class="content">
+    <iframe
+            id="arframe"
+            src="ar.html"
+            width="1148"
+            height="861"
+            style="margin-top: 0px; margin-bottom: 0px"
+    ></iframe>
+    <img
+            src="icons/No_Camera.svg"
+            alt="No Camera"
+            width="1148"
+            height="861"
+            id="noImage"
+            style="display: none"
+    />
+  </div>
+  <div
+          class="bottomButtons d-flex justify-content-around"
           style="margin-top: 0px; margin-bottom: 0px"
-        ></iframe>
-        <img
-          src="icons/No_Camera.svg"
-          alt="No Camera"
-          width="1148"
-          height="861"
-          id="noImage"
-          style="display: none"
-        />
-      </div>
+  >
+    <button onclick="showHide('mainUI','loadingScreen')">
+      <img src="icons/Leave.svg" alt="Leave Call" class="leave" />
+    </button>
+
+    <!-- this is a very dirty toggle, u need to get the camera state and set the other one's display attr. to none -->
+
+    <span id="showCam">
+          <button
+                  onclick="compoundShowHide('showCam','arframe','hideCam','noImage')"
+          >
+            <img
+                    src="icons/Camera_Enable.svg"
+                    alt="Camera Enabled"
+                    class="camera"
+            />
+          </button>
+        </span>
+
+    <span id="hideCam" style="display: none">
+          <button
+                  onclick="compoundShowHide('hideCam','noImage','showCam','arframe')"
+          >
+            <img
+                    src="icons/Disable_Camera.svg"
+                    alt="Camera Disabled"
+                    class="camera"
+            />
+          </button>
+        </span>
+
+
+    <style>
+      /* The Modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0); /* Black w/ opacity */
+        background-color: rgba(0,0,0,0); /* Black w/ opacity */
+        -webkit-animation-name: fadeIn; /* Fade in the background */
+        -webkit-animation-duration: 0.4s;
+        animation-name: fadeIn;
+        animation-duration: 0.4s;
+      }
+
+      /* Modal Content */
+      .modal-content {
+        position: fixed;
+        bottom: 0;
+        background-color: var(--white);
+        width: 80%;
+        -webkit-animation-name: slideIn;
+        -webkit-animation-duration: 0.4s;
+        animation-name: slideIn;
+        animation-duration: 0.4s;
+      }
+
+      /* The Close Button */
+      .close {
+        color: var(--white);
+        float: right;
+        transform: translate(30 px);
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .modal-header {
+        padding: 2px 16px;
+        background-color: var(--default-text-color);
+        color: var(--white);
+      }
+
+      .modal-body {
+        padding: 2px 16px;
+      }
+
+      .modal-footer {
+        padding: 2px 16px;
+        background-color: var(--default-text-color);
+        color: var(--white);
+      }
+
+      /* Add Animation */
+      @-webkit-keyframes slideIn {
+        from {
+          bottom: -300px;
+          opacity: 0;
+        }
+        to {
+          bottom: 0;
+          opacity: 0.5;
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          bottom: -300px;
+          opacity: 0;
+        }
+        to {
+          bottom: 0;
+          opacity: 0.5;
+        }
+      }
+
+      @-webkit-keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 0.5;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 0.5;
+        }
+      }
+    </style>
+
+    <button id="myBtn">
+      <img
+              src="icons/Add_Object_1.svg"
+              alt="Add Object"
+              class="addObject"
+      />
+    </button>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
       <div
-        class="bottomButtons d-flex justify-content-around"
-        style="margin-top: 0px; margin-bottom: 0px"
+              class="modal-content"
+              style="margin-left: 137px; margin-bottom: 20px"
       >
-        <button onclick="showHide('mainUI','loadingScreen')">
-          <img src="icons/Leave.svg" alt="Leave Call" class="leave" />
-        </button>
-
-        <!-- this is a very dirty toggle, u need to get the camera state and set the other one's display attr. to none -->
-
-        <span id="showCam">
-          <button
-            onclick="compoundShowHide('showCam','arframe','hideCam','noImage')"
-          >
-            <img
-              src="icons/Camera_Enable.svg"
-              alt="Camera Enabled"
-              class="camera"
-            />
-          </button>
-        </span>
-
-        <span id="hideCam" style="display: none">
-          <button
-            onclick="compoundShowHide('hideCam','noImage','showCam','arframe')"
-          >
-            <img
-              src="icons/Disable_Camera.svg"
-              alt="Camera Disabled"
-              class="camera"
-            />
-          </button>
-        </span>
-
-        <video hidden id="webcam" autoplay playsinline width="640" height="480"></video>
-        <canvas hidden id="canvas" height="480" width="640"></canvas>
-        <canvas hidden id="dummyCanvas" height="480" width="640"></canvas>
-        <canvas hidden id="dummyCanvas1" height="240" width="320"></canvas>
-        <canvas hidden id="dummyCanvas2" height="480" width="640"></canvas>
-        <canvas hidden id="dummyCanvas3" height="240" width="320"></canvas>
-
-        <style>
-          /* The Modal (background) */
-          .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: var(--black); /* Fallback color */
-            background-color: var(--black); /* Black w/ opacity */
-            -webkit-animation-name: fadeIn; /* Fade in the background */
-            -webkit-animation-duration: 0.4s;
-            animation-name: fadeIn;
-            animation-duration: 0.4s;
-          }
-
-          /* Modal Content */
-          .modal-content {
-            position: fixed;
-            bottom: 0;
-            background-color: var(--white);
-            width: 80%;
-            -webkit-animation-name: slideIn;
-            -webkit-animation-duration: 0.4s;
-            animation-name: slideIn;
-            animation-duration: 0.4s;
-          }
-
-          /* The Close Button */
-          .close {
-            color: var(--white);
-            float: right;
-            transform: translate(30 px);
-            font-size: 28px;
-            font-weight: bold;
-          }
-
-          .close:hover,
-          .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-          }
-
-          .modal-header {
-            padding: 2px 16px;
-            background-color: var(--default-text-color);
-            color: var(--white);
-          }
-
-          .modal-body {
-            padding: 2px 16px;
-          }
-
-          .modal-footer {
-            padding: 2px 16px;
-            background-color: var(--default-text-color);
-            color: var(--white);
-          }
-
-          /* Add Animation */
-          @-webkit-keyframes slideIn {
-            from {
-              bottom: -300px;
-              opacity: 0;
-            }
-            to {
-              bottom: 0;
-              opacity: 0.5;
-            }
-          }
-
-          @keyframes slideIn {
-            from {
-              bottom: -300px;
-              opacity: 0;
-            }
-            to {
-              bottom: 0;
-              opacity: 0.5;
-            }
-          }
-
-          @-webkit-keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 0.5;
-            }
-          }
-
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 0.5;
-            }
-          }
-        </style>
-
-        <button id="myBtn">
-          <img
-            src="icons/Add_Object_1.svg"
-            alt="Add Object"
-            class="addObject"
-          />
-        </button>
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-          <!-- Modal content -->
-          <div
-            class="modal-content"
-            style="margin-left: 137px; margin-bottom: 20px"
-          >
-            <div class="modal-header">
-              <span class="close">&times;</span>
-              <h1 style="margin-top: 10px; margin-bottom: 10px">Polynomial</h1>
-            </div>
-            <div class="modal-body" style="height: 64px">
-              <input
-                type="text"
-                style="
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h1 style="margin-top: 10px; margin-bottom: 10px">Polynomial</h1>
+        </div>
+        <div class="modal-body" style="height: 64px">
+          <input
+                  id="polynomialText"
+                  type="text"
+                  style="
                   width: 1058px;
                   height: 60px;
                   background-color: unset;
                   font-size: 24pt;
+
                 "
-                placeholder="txt"
-              />
-            </div>
-            <div class="modal-footer">
-              <button style="width: 1050px; font-size: 16pt" class="update">
-                Update
-              </button>
-            </div>
-          </div>
+                  placeholder="txt"
+          />
         </div>
-
-        <script>
-          // Get the modal
-          var modal = document.getElementById("myModal");
-
-          // Get the button that opens the modal
-          var btn = document.getElementById("myBtn");
-
-          // Get the <span> elements that closes the modal
-          var span = document.getElementsByClassName("close")[0];
-          var update = document.getElementsByClassName("update")[0];
-
-          // When the user clicks the button, open the modal
-          btn.onclick = function () {
-            modal.style.display = "block";
-          };
-
-          // When the user clicks on <span> (x), close the modal
-          span.onclick = function () {
-            modal.style.display = "none";
-          };
-
-          // When the user clicks on update button, close the modal
-          update.onclick = function () {
-            modal.style.display = "none";
-          };
-
-          // When the user clicks anywhere outside of the modal, close it
-          window.onclick = function (event) {
-            if (event.target == modal) {
-              modal.style.display = "none";
-            }
-          };
-
-
-
-
-
-
-
-
-          let first = false;
-          let socket = io();
-          let roomInput = document.getElementById("roomId");
-          let id = -1;
-          const webcamElement = document.getElementById('webcam');
-          const canvasElement = document.getElementById('canvas');
-          canvasElement.style.display = "none";
-          const sendImageCanvas = document.getElementById('dummyCanvas');
-          sendImageCanvas.style.display = "none";
-          const receiveImageCanvas = document.getElementById('dummyCanvas1');
-          receiveImageCanvas.style.display = "none";
-          const maskImageCanvas = document.getElementById('dummyCanvas2');
-          maskImageCanvas.style.display = "none";
-          const maskImageCanvasFinal = document.getElementById('dummyCanvas3');
-          maskImageCanvasFinal.style.display = "none";
-          const webcam = new Webcam(webcamElement, 'environment', canvasElement);
-          webcam.start();
-
-          var iframe = document.getElementById("arframe")
-          var iframeContent = iframe.contentWindow
-
-
-
-          loadBodyPix()
-
-          function submitPolynomial(){
-
-          }
-
-          function polynomialFunc(coefficients, x){
-            var y = 0
-            for(var i = 0; i < coefficients.length; i++){
-              y += Math.pow(x, i) * coefficients[i]
-            }
-            return y
-          }
-
-          function spawnPolynomial(key, file){
-            let request = new XMLHttpRequest()
-            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
-            request.send()
-            request.onload = () =>{
-              console.log(request)
-              if(request.status === 200){
-                var response
-                response = JSON.parse(request.response)
-                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
-                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
-
-                var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
-                var polynomial = []
-                for(var i = 0; i < polynomialString.length; i++){
-                  polynomial.push(parseFloat(polynomialString[i]))
-                }
-
-                for(var x = 0; x < 2; x+= 0.1){
-                  var point = document.createElement("a-entity")
-                  point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
-                  point.setAttribute("scale", ".1 .1 .1")
-                  point.setAttribute("gltf-model", url)
-                  iframeContent.document.getElementById("graphMarker").appendChild(point)
-                }
-              }else{
-                console.log("Error")
-              }
-            }
-            return ""
-          }
-
-
-          //https://free3d.com/3d-model/low-poly-chess-black-white-48044.html
-          function setupChessBoardEchoAR(key, file){
-            let request = new XMLHttpRequest()
-            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
-            request.send()
-            request.onload = () =>{
-              console.log(request)
-              if(request.status === 200){
-                var response
-                response = JSON.parse(request.response)
-                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
-                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
-
-                iframeContent.document.getElementById("chess").setAttribute("gltf-model", url)
-
-              }else{
-                console.log("Error")
-              }
-            }
-            return ""
-          }
-
-          //https://free3d.com/3d-model/industry-robot-arm-9499.html
-          function setupArmModelEchoAR(key, file){
-            let request = new XMLHttpRequest()
-            request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
-            request.send()
-            request.onload = () =>{
-              console.log(request)
-              if(request.status === 200){
-                var response
-                response = JSON.parse(request.response)
-                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
-                var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
-
-                iframeContent.document.getElementById("arm").setAttribute("gltf-model", url)
-
-              }else{
-                console.log("Error")
-              }
-            }
-            return ""
-          }
-
-
-          let EchoARKey = "yellow-bar-9172"
-          let pointFile = "239bac05-2d96-433b-871a-13749ed858d8"
-          let chessFile = "c8119589-9bd8-4d8a-a6b1-897d213fb21a"
-          let armFile = "40a55936-9716-4109-9dfe-898329e081ad"
-          spawnPolynomial(EchoARKey, pointFile)
-          setupChessBoardEchoAR(EchoARKey, chessFile)
-          setupArmModelEchoAR(EchoARKey, armFile)
-
-
-          var net
-          async function loadBodyPix() {
-            net = await bodyPix.load({
-              architecture: 'MobileNetV1',
-              outputStride: 16,
-              multiplier: 0.75,
-              quantBytes: 1
-            });
-          }
-
-          async function segmentImage(){
-            try{
-              const opacity = 1;
-              const flipHorizontal = true;
-              const maskBlurAmount = 0
-
-              var img = new Image;
-              img.src = sendImageCanvas.toDataURL("image/png")
-              img.width = 640
-              img.height = 480
-              const segmentation = await net.segmentPerson(webcamElement, {
-                flipHorizontal: true,
-                internalResolution: 'low',
-                segmentationThreshold: .6
-              });
-
-
-              const coloredPartImage = bodyPix.toMask(segmentation);
-              bodyPix.drawMask(
-                      maskImageCanvas, img, coloredPartImage, opacity, maskBlurAmount,
-                      flipHorizontal);
-
-
-
-              var img1 = new Image;
-              img1.src = maskImageCanvas.toDataURL("image/png")
-              maskImageCanvasFinal.getContext("2d").drawImage(img1, 0, 0, 320, 240);
-
-
-
-
-            }
-            catch(e){
-
-              console.log(e)
-            }
-          }
-
-          function removeBlackPixels(){
-
-            var ctx = receiveImageCanvas.getContext("2d")
-            var imgData = ctx.getImageData(0, 0, maskImageCanvas.width, maskImageCanvas.height);
-            for(var i = 0; i < imgData.data.length; i+=4){
-              if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
-                red = imgData.data[i] = 0;
-                green = imgData.data[i+1] = 0;
-                blue = imgData.data[i+2] = 0;
-                alpha = imgData.data[i+3] = 0;
-              }
-            }
-            ctx.putImageData(imgData, 0, 0);
-
-          }
-
-          function submitRoom(){
-            // console.log("here");
-            socket.emit('connection-attempt', roomInput.value);
-          }
-          socket.on('connection-successful-1', function () {
-            first = true;
-            // document.getElementById('status').innerText = "Waiting for others to join";
-          });
-          socket.on('connection-successful-2', function (id) {
-            // document.getElementById('status').innerText = "Others have joined!";
-            this.id = id;
-            update();
-          });
-          socket.on('room-full', function () {
-            // document.getElementById('status').innerText = "Room is full";
-          });
-          socket.on('image2', function (imageString) {
-            if(!first){
-              const img = new Image;
-              img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0, 320, 240); };
-              img.src = imageString;
-              removeBlackPixels();
-              iframeContent.document.getElementById('cylinder').setAttribute('src', receiveImageCanvas.toDataURL("image/png"))
-            }
-            update();
-          })
-          function update() {
-            if(first){
-              sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0, 640, 480);
-              segmentImage()
-            }
-            socket.emit('image', id, maskImageCanvas.toDataURL("image/png"));
-          }
-
-
-
-        </script>
+        <div class="modal-footer">
+          <button style="width: 1050px; font-size: 16pt" onclick="submitPolynomial()">
+            Update
+          </button>
+        </div>
       </div>
     </div>
-  </body>
+
+    <video hidden id="webcam" autoplay playsinline width="640" height="480"></video>
+    <canvas hidden id="canvas" height="480" width="640"></canvas>
+    <canvas hidden id="dummyCanvas" height="480" width="640"></canvas>
+    <canvas hidden id="dummyCanvas1" height="240" width="320"></canvas>
+    <canvas hidden id="dummyCanvas2" height="480" width="640"></canvas>
+    <canvas hidden id="dummyCanvas3" height="240" width="320"></canvas>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+
+
+      let first = false;
+      let socket = io();
+      let roomInput = document.getElementById("roomId");
+      let id = -1;
+      const webcamElement = document.getElementById('webcam');
+      const canvasElement = document.getElementById('canvas');
+      canvasElement.style.display = "none";
+      const sendImageCanvas = document.getElementById('dummyCanvas');
+      sendImageCanvas.style.display = "none";
+      const receiveImageCanvas = document.getElementById('dummyCanvas1');
+      receiveImageCanvas.style.display = "none";
+      const maskImageCanvas = document.getElementById('dummyCanvas2');
+      maskImageCanvas.style.display = "none";
+      const maskImageCanvasFinal = document.getElementById('dummyCanvas3');
+      maskImageCanvasFinal.style.display = "none";
+      const webcam = new Webcam(webcamElement, 'environment', canvasElement);
+      webcam.start();
+
+      var iframe = document.getElementById("arframe")
+      var iframeContent = iframe.contentWindow
+
+
+
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+
+      // Get the button that opens the modal
+      var btn = document.getElementById("myBtn");
+
+      // Get the <span> elements that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+
+
+      // When the user clicks the button, open the modal
+      btn.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+
+
+
+
+
+
+
+      loadBodyPix()
+
+      function submitPolynomial(){
+        console.log(document.getElementById('polynomialText').value)
+        document.getElementById('arframe').contentWindow.setPolynomial(document.getElementById('polynomialText').value)
+      }
+      //
+      // function polynomialFunc(coefficients, x){
+      //     var y = 0
+      //     for(var i = 0; i < coefficients.length; i++){
+      //         y += Math.pow(x, i) * coefficients[i]
+      //     }
+      //     return y
+      // }
+      //
+      // function spawnPolynomial(key, file){
+      //     let request = new XMLHttpRequest()
+      //     request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+      //     request.send()
+      //     request.onload = () =>{
+      //         console.log(request)
+      //         if(request.status === 200){
+      //             var response
+      //             response = JSON.parse(request.response)
+      //             var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+      //             var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+      //
+      //             var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
+      //             var polynomial = []
+      //             for(var i = 0; i < polynomialString.length; i++){
+      //                 polynomial.push(parseFloat(polynomialString[i]))
+      //             }
+      //
+      //             console.log(polynomial)
+      //
+      //             for(var x = 0; x < 2; x+= 0.1){
+      //                 var point = document.createElement("a-entity")
+      //                 point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x) )
+      //                 point.setAttribute("scale", ".1 .1 .1")
+      //                 point.setAttribute("gltf-model", url)
+      //                 iframeContent.document.getElementById("graphMarker").appendChild(point)
+      //             }
+      //         }else{
+      //             console.log("Error")
+      //         }
+      //     }
+      //     return ""
+      // }
+
+
+      //https://free3d.com/3d-model/low-poly-chess-black-white-48044.html
+      function setupChessBoardEchoAR(key, file){
+        let request = new XMLHttpRequest()
+        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+        request.send()
+        request.onload = () =>{
+          console.log(request)
+          if(request.status === 200){
+            var response
+            response = JSON.parse(request.response)
+            var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+            var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+            iframeContent.document.getElementById("chess").setAttribute("gltf-model", url)
+
+          }else{
+            console.log("Error")
+          }
+        }
+        return ""
+      }
+
+      //https://free3d.com/3d-model/industry-robot-arm-9499.html
+      function setupArmModelEchoAR(key, file){
+        let request = new XMLHttpRequest()
+        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+        request.send()
+        request.onload = () =>{
+          console.log(request)
+          if(request.status === 200){
+            var response
+            response = JSON.parse(request.response)
+            var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+            var url =  "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+            iframeContent.document.getElementById("arm").setAttribute("gltf-model", url  )
+
+          }else{
+            console.log("Error")
+          }
+        }
+        return ""
+      }
+
+
+      let EchoARKey = "yellow-bar-9172"
+      let pointFile = "239bac05-2d96-433b-871a-13749ed858d8"
+      let chessFile = "c8119589-9bd8-4d8a-a6b1-897d213fb21a"
+      let armFile = "40a55936-9716-4109-9dfe-898329e081ad"
+      // spawnPolynomial(EchoARKey, pointFile)
+      setupChessBoardEchoAR(EchoARKey, chessFile)
+      setupArmModelEchoAR(EchoARKey, armFile)
+
+
+      var net
+      async function loadBodyPix() {
+        net = await bodyPix.load({
+          architecture: 'MobileNetV1',
+          outputStride: 16,
+          multiplier: 0.75,
+          quantBytes: 1
+        });
+      }
+
+      async function segmentImage(){
+        try{
+          const opacity = 1;
+          const flipHorizontal = true;
+          const maskBlurAmount = 0
+
+          var img = new Image;
+          img.src = sendImageCanvas.toDataURL("image/png")
+          img.width = 640
+          img.height = 480
+          const segmentation = await net.segmentPerson(webcamElement, {
+            flipHorizontal: true,
+            internalResolution: 'low',
+            segmentationThreshold: .6
+          });
+
+
+          const coloredPartImage = bodyPix.toMask(segmentation);
+          bodyPix.drawMask(
+                  maskImageCanvas, img, coloredPartImage, opacity, maskBlurAmount,
+                  flipHorizontal);
+
+
+
+          var img1 = new Image;
+          img1.onload = function() {
+            maskImageCanvasFinal.getContext("2d").drawImage(img1, 0, 0, 320, 240);
+          };
+          img1.src = maskImageCanvas.toDataURL("image/png")
+
+
+
+        }
+        catch(e){
+
+          console.log(e)
+        }
+      }
+
+      function removeBlackPixels(){
+
+        var ctx = receiveImageCanvas.getContext("2d")
+        var imgData = ctx.getImageData(0, 0, receiveImageCanvas.width, receiveImageCanvas.height);
+        for(var i = 0; i < imgData.data.length; i+=4){
+          if(imgData.data[i] === 0 && imgData.data[i+1] === 0 && imgData.data[i+2] === 0){
+            red = imgData.data[i] = 0;
+            green = imgData.data[i+1] = 0;
+            blue = imgData.data[i+2] = 0;
+            alpha = imgData.data[i+3] = 0;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+      }
+
+      function submitRoom(){
+        // console.log("here");
+        socket.emit('connection-attempt', roomInput.value);
+      }
+      socket.on('connection-successful-1', function () {
+        first = true;
+        // document.getElementById('status').innerText = "Waiting for others to join";
+      });
+      socket.on('connection-successful-2', function (id) {
+        // document.getElementById('status').innerText = "Others have joined!";
+        this.id = id;
+        updateFunc();
+      });
+      socket.on('room-full', function () {
+        // document.getElementById('status').innerText = "Room is full";
+      });
+      socket.on('image2', function (imageString) {
+        if(!first){
+          const img = new Image;
+          img.onload = () => { receiveImageCanvas.getContext("2d").drawImage(img, 0, 0, 320, 240); };
+          img.src = imageString;
+          removeBlackPixels();
+          iframeContent.document.getElementById('cylinder').setAttribute('src', receiveImageCanvas.toDataURL("image/png"))
+        }
+
+      })
+      function updateFunc() {
+        if(first){
+          sendImageCanvas.getContext("2d").drawImage(webcamElement, 0, 0, 640, 480);
+          segmentImage()
+          socket.emit('image', id, maskImageCanvasFinal.toDataURL("image/png"));
+        }
+      }
+      setInterval(updateFunc, 100 )
+
+
+
+    </script>
+  </div>
+</div>
+</body>
 </html>

@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
     <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
 </head>
-<body style="margin : 0px; overflow: hidden;" >
+<body style="margin : 0px; overflow: hidden;">
 <a-scene
         arjs='detectionMode: mono_and_matrix; matrixCodeType:3x3'
         embedded
@@ -19,25 +19,103 @@
         vr-mode-ui="enabled: false"
         gesture-detector
         id="scene">
-    <a-marker id = "cameraMarker" type='barcode'  value = '5'>
+    <a-marker id="cameraMarker" type='barcode' value='5'>
         <!--        360 / (2 * pi * radius) * image width-->
-        <a-cylinder id = "cylinder" height="2.5" radius="3.3" src="person1.jpg" open-ended="true" theta-start="60" theta-length="57" position="0, 0, 0" rotation = "0 -90 80"></a-cylinder>
+        <a-cylinder id="cylinder" height="2.5" radius="3.3" src="person1.jpg" open-ended="true" theta-start="60"
+                    theta-length="57" position="0, 0, 0" rotation="0 -90 80"></a-cylinder>
     </a-marker>
 
-    <a-marker id = "graphMarker" type='barcode'  value = '7'>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "0 0 90"></a-cylinder>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "0 90 0"></a-cylinder>
-        <a-cylinder color="black" height="3" radius=".01" rotation = "90 0 0"></a-cylinder>
+    <a-marker id="graphMarker" type='barcode' value='7'>
+        <a-cylinder color="black" height="3" radius=".01" rotation="0 0 90"></a-cylinder>
+        <a-cylinder color="black" height="3" radius=".01" rotation="0 90 0"></a-cylinder>
+        <a-cylinder color="black" height="3" radius=".01" rotation="90 0 0"></a-cylinder>
+    </a-marker>
+    <a-marker id="graphMarker1" type='barcode' value='7'>
+        <a-cylinder color="black" height="3" radius=".01" rotation="0 0 90"></a-cylinder>
+        <a-cylinder color="black" height="3" radius=".01" rotation="0 90 0"></a-cylinder>
+        <a-cylinder color="black" height="3" radius=".01" rotation="90 0 0"></a-cylinder>
     </a-marker>
 
-    <a-marker id = "chessMarker" type='barcode'  value = '3'>
-        <a-entity id="chess" position = "0 0 0" scale = ".2 .2 .2"></a-entity>
+    <a-marker id="chessMarker" type='barcode' value='3'>
+        <a-entity id="chess" position="0 0 0" scale=".2 .2 .2"></a-entity>
     </a-marker>
-    <a-marker id = "modelMarker" type='barcode'  value = '1'>
-        <a-entity id="arm" position = "0 0 0" scale = ".001 .001 .001"></a-entity>
+    <a-marker id="modelMarker" type='barcode' value='1'>
+        <a-entity id="arm" position="0 0 0" scale=".001 .001 .001"></a-entity>
     </a-marker>
 
     <a-entity camera></a-entity>
 </a-scene>
+<script>
+    function spawnPolynomial(key, file) {
+        let request = new XMLHttpRequest()
+        request.open("GET", "https://console.echoar.xyz/query?key=" + key + "&entry=" + file)
+        request.send()
+        request.onload = () => {
+            console.log(request)
+            if (request.status === 200) {
+
+                var response
+
+
+                console.log(response)
+
+                response = JSON.parse(request.response)
+                var storageId = response['db'][file]['additionalData']['glbHologramStorageID']
+                var url = "https://console.echoAR.xyz/query?key=" + key + "&file=" + storageId
+
+
+                var polynomialString = response['db'][file]['additionalData']['polynomial'].split(",")
+                var polynomial = []
+                for (var i = 0; i < polynomialString.length; i++) {
+                    polynomial.push(parseFloat(polynomialString[i]))
+                }
+
+                console.log(polynomial)
+
+                document.getElementById("graphMarker").innerHTML = ""
+
+
+                for (var x = 0; x < 2; x += 0.1) {
+                    var point = document.createElement("a-entity")
+                    point.setAttribute("position", "" + x + " 0 " + polynomialFunc(polynomial, x))
+                    point.setAttribute("scale", ".01 .01 .01")
+                    point.setAttribute("gltf-model", url)
+                    document.getElementById("graphMarker").appendChild(point)
+                }
+
+
+            } else {
+                console.log("Error")
+            }
+        }
+        return ""
+    }
+
+    function polynomialFunc(coefficients, x) {
+        var y = 0
+        for (var i = 0; i < coefficients.length; i++) {
+            y += Math.pow(x, i) * coefficients[i]
+        }
+        return y
+    }
+
+    let EchoARKey = "yellow-bar-9172"
+    let pointFile = "239bac05-2d96-433b-871a-13749ed858d8"
+
+
+    function setPolynomial(polynomial) {
+        var url = "https://console.echoar.xyz/post?key=" + EchoARKey + "&entry=" + pointFile + "&data=" + "polynomial" + "&value=" + polynomial + ""
+        let request = new XMLHttpRequest()
+        request.open("POST", url)
+        request.send()
+
+        spawnPolynomial(EchoARKey, pointFile)
+    }
+
+
+    spawnPolynomial(EchoARKey, pointFile)
+
+
+</script>
 </body>
 </html>
