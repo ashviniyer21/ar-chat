@@ -14,7 +14,7 @@ AR Chat is a video conferencing platform that creates a face-to-face meeting exp
 -Recreational: It's always good to spend time and play games with friends, and now playing games online can be a more life-like experience in AR. You can see the person you are playing with as well as both have the game board in front of you, as if you were both sitting around a table. For this proof of concept, we uploaded a chess board model to demonstrate how a game would look.
 
 ## How we built it
-We made a webapp using node.js, and stream video between devices using a socket. Devices are connected using a room code, and when two devices enter the same code they are connected to each other.
+We made a webapp using node.js, and stream images between devices using a socket. Devices are connected using a room code, and when two devices enter the same code they are connected to each other. We used Tensorflow.js and the BodyPix person segmentation model to extract people from the webcam, and used AR.js to display it in AR on certain AR markers.
 
 ### Images from the webcam follow a pipeline to get from the webcam to AR:
 1. Image is taken from webcam
