@@ -25,7 +25,7 @@ We made a webapp using node.js, and stream images between devices using a socket
 6. The image is then displayed in AR using AR.js
 
 ### How we made the proof of concepts using Echo AR:
-We used the Echo AR API to receive models for the proof of concepts in realtime. We also used the API to store metadata for the graphing proof of concept as well as download the 3D models from the cloud. The Echo AR cloud contained all of the 3D models used in the AR demo except for the AR webcam, which are locally added to the AR.js scene as the images are received from the socket.
+We used the Echo AR API (https://www.echoar.xyz/) to receive models for the proof of concepts in realtime. We also used the API to store metadata for the graphing proof of concept as well as download the 3D models from the cloud. The Echo AR cloud contained all of the 3D models used in the AR demo except for the AR webcam, which are locally added to the AR.js scene as the images are received from the socket.
 
 In the future, Echo AR can be used to implement the real version of many of the proof of concepts we showed, such as using it for storing the position of the chess pieces or for allowing users to upload 3D CAD models and have them show up in the scene in realtime for easy collaboration and review of designs.
 
