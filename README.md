@@ -14,11 +14,11 @@ AR Chat is a video conferencing platform that creates a face-to-face meeting exp
 -Recreational: It's always good to spend time and play games with friends, and now playing games online can be a more life-like experience in AR. You can see the person you are playing with as well as both have the game board in front of you, as if you were both sitting around a table. For this proof of concept, we uploaded a chess board model to demonstrate how a game would look.
 
 ## How we built it
-We made a webapp using node.js, and stream images between devices using a socket. Devices are connected using a room code, and when two devices enter the same code they are connected to each other. We used Tensorflow.js and the BodyPix person segmentation model to extract people from the webcam, and used AR.js to display it in AR on certain AR markers.
+We made a webapp using node.js, and stream images between devices using a socket. Devices are connected using a room code, and when two devices enter the same code they are connected to each other. We used Tensorflow.js and the BodyPix person segmentation model to extract people from the webcam, and used AR.js to display it in AR on certain AR markers. (https://blog.tensorflow.org/2019/11/updated-bodypix-2.html)
 
 ### Images from the webcam follow a pipeline to get from the webcam to AR:
 1. Image is taken from webcam
-2. Using TensorFlow.js BodyPix image segmentation model, we segmented the image and detected where the person was. (https://blog.tensorflow.org/2019/11/updated-bodypix-2.html)
+2. Using TensorFlow.js BodyPix image segmentation model, we segmented the image and detected where the person was. 
 3. Given the detected person, we cut out all pixels that are not the person (background) and were left with a transparent image of just the person.
 4. We send that image to the other device using the socket.
 5. The image is wrapped around a cylinder 3D object using Aframe.js. The cylinder is used to give the image more depth, so it is a slightly curved image rather than a flat image. This in no way replicates the depth of a human model, but the extra depth of the cylinder makes it look a little bit nicer.
